@@ -2,7 +2,7 @@
 Evaluator:
 - Loads ANTHROPIC_API_KEY from .env (python-dotenv).
 - Builds a user message from prompt.txt + fixtures (ORIGINAL/FACTS/BANNED) and injects a per-run HARD LIMIT (MAX_CHARS).
-- Calls Anthropic once per run (no tools) with modest randomness (temperature/top_p) so outputs vary across runs.
+- Calls Anthropic once per run (no tools) with modest randomness so outputs vary across runs.
 - Parses the model's text output and feeds it to the deterministic grader.
 - Repeats N times and prints pass-rate.
 
@@ -55,11 +55,10 @@ def build_user_message(max_chars: int, max_words: int) -> str:
 
 def run_once(client: Anthropic, model: str, max_chars: int, max_words: int) -> str:
     """Send one prompt to the model and return its text response."""
-    # Slight randomness so outputs vary run-to-run (needed for 10–40% pass band)
     msg = client.messages.create(
         model=model,
         max_tokens=400,
-        temperature=0.6,   # modest variability
+        temperature=0.45,   # modest variability to avoid 0% / 100% determinism
         top_p=0.9,
         system=(
             "Output ONLY strict JSON (no prose). Keep 'rewrite' within the provided character/word limits. "
@@ -76,16 +75,15 @@ def main():
     ap.add_argument("--model", type=str, default="claude-3-5-haiku-latest")
     args = ap.parse_args()
 
-    # EXACT character budget the grader enforces at 60%
-    max_chars = floor(len(ORIGINAL) * 0.60)
+    max_chars = floor(len(ORIGINAL) * 0.60)  # 60% limit (matches grader)
 
     client = Anthropic()
-    random.seed()  # system entropy
+    random.seed()
 
     passes = 0
     for i in range(1, args.runs + 1):
-        # small per-run variation to induce phrasing changes
-        max_words = random.choice([12, 14, 16, 18])
+        # small per-run variation to induce phrasing changes, but keep tight
+        max_words = random.choice([12, 14, 16])
         print(f"\nRunning evaluation {i}/{args.runs}... (MAX_WORDS={max_words})")
         out = run_once(client, args.model, max_chars, max_words)
 

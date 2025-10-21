@@ -12,9 +12,9 @@ FACTS = ["GDP grew by 3.2%", "inflation was 2.1%", "exports increased"]
 
 BANNED = {"recession", "budget deficit $9.9B"}
 
-# Minimal aliases so some paraphrases pass, others fail (yields 10–40% with temp>0).
+# Minimal aliases so some paraphrases pass, others fail (yields ~10–40% with temp>0).
 ALIAS_MAP = {
     "GDP grew by 3.2%": ["GDP +3.2%"],
     "inflation was 2.1%": ["inflation 2.1%"],
-    "exports increased": ["exports rose"],
+    "exports increased": ["exports rose", "exports grew"],  # added "exports grew" to reduce false fails
 }
