@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 hello-py
 ===
 
@@ -35,3 +36,7 @@ asyncio.run(main(concurrent=False))
 ```
 
 When running concurrently, results print as they complete (not in run order) for faster overall execution.
+=======
+# Reinforcement-Learning-Evaluation
+ACE-inspired RL evaluation task where an LLM must summarize without losing facts or numbers, output ACE-style reflections (key_insight, delta_update), and is graded deterministically to measure self-improvement. per Agentic Context Engineering (Zhang et al., 2025). 
+>>>>>>> 9b35222fcfe09fa364733549c1a1dd506e33f31b
