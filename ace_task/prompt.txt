@@ -1,0 +1,26 @@
+You will receive:
+- ORIGINAL: a short context paragraph.
+- FACTS: a list of canonical facts that MUST be preserved.
+- BANNED: a list of terms you MUST NOT introduce.
+
+Your job has TWO parts:
+(1) Rewrite ORIGINAL to be concise (≤60% of original characters) WITHOUT losing any FACTS.
+(2) Produce ACE-style reflection/curation.
+
+Output ONLY a JSON object with EXACTLY these keys:
+{
+  "rewrite": str,
+  "preserved_facts": [str],
+  "at_risk_facts": [str],
+  "key_insight": str,
+  "delta_update": str
+}
+
+Rules:
+- The rewrite must include every item from FACTS (verbatim or allowed alias).
+- Do NOT add new claims; avoid any term from BANNED.
+- Keep all numbers and units unchanged (e.g., 3.2%, $5.1B).
+- Be concise but complete (≤60% of original characters).
+- key_insight: one sentence on avoiding context collapse by preserving granular details.
+- delta_update: one actionable curator bullet to add to a playbook.
+- Output only the JSON (no extra prose).

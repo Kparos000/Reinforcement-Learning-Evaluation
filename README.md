@@ -40,3 +40,5 @@ When running concurrently, results print as they complete (not in run order) for
 # Reinforcement-Learning-Evaluation
 ACE-inspired RL evaluation task where an LLM must summarize without losing facts or numbers, output ACE-style reflections (key_insight, delta_update), and is graded deterministically to measure self-improvement. per Agentic Context Engineering (Zhang et al., 2025). 
 >>>>>>> 9b35222fcfe09fa364733549c1a1dd506e33f31b
+
+The current setup implements the environment and reward model for reinforcement learning. Each episode has a clear state, action, and reward, and we repeatedly evaluate the model’s responses to compute a pass rate — an average reward signal. The agent isn’t updating its weights here, but the system is fully RL-ready: we could plug in PPO or rejection sampling to optimize the model against this deterministic reward.
