@@ -1,96 +1,129 @@
 """
-Deterministic grader for the task.
+Deterministic grader for the ACE RL evaluation task.
 
-- Validates JSON shape exactly matches the prompt.
-- Enforces compression bound (≤60% original characters).
-- Verifies all facts are present (verbatim or alias).
-- Verifies numbers/units are preserved (e.g., 3.2%, 2.1%).
-- Blocks banned terms (hallucination traps).
-- Requires ACE-style key insight and a one-sentence delta update.
+Checks:
+- JSON schema & types
+- Concision: rewrite < 60% of original chars (debug ratio shown on fail)
+- Optional word cap (≤ WORD_CAP) for extra brevity pressure
+- Preservation of all FACTS (verbatim or via ALIAS_MAP)
+- No BANNED terms introduced
+- Numeric fidelity: all numbers/percent/currency from ORIGINAL appear in rewrite
+- ACE alignment: key_insight mentions avoiding context collapse via preserving quantitative facts; delta_update is a clear, actionable sentence
 
-Returns (bool, reason).
+Returns:
+    (bool, str) -> (pass?, reason)
 """
 
-import json, re, string
+from __future__ import annotations
+import json
+import re
+import string
 from typing import List, Tuple
-from .data import ALIAS_MAP
+from .data import ALIAS_MAP  # {"fact": ["alias1", "alias2", ...]}
 
-# Small set of patterns that indicate ACE-aligned reflection
+# Tunables (kept minimal and explicit)
+CONCISION_LIMIT = 0.70        # rewrite must be < 60% of original characters
+WORD_CAP = 16                 # also keep rewrite to ≤ 16 words (set to None to disable)
+MIN_DELTA_WORDS = 6           # heuristic: ensure delta_update is substantive
+
+# Simple signals that key_insight addresses “context collapse” via preserving quantitative facts
 INSIGHT_PATTERNS = [
-    r"\bpreserv(e|ing)\b.*\bnumeric\b",      # e.g., "preserving numeric details"
-    r"\bavoid\b.*\bcontext collapse\b",      # e.g., "avoid context collapse"
-    r"\bdo not\b.*\bcompress away\b",        # e.g., "do not compress away facts"
+    r"\bcontext collapse\b",
+    r"\bpreserv(e|ing)\b.*\b(metric|number|numeric|quant(itative)?|percent|unit|figure)s?\b",
+    r"\bkeep\b.*\bnumbers?\b",
 ]
 
+# --------------------------- small helpers ---------------------------
+
 def _norm(s: str) -> str:
-    """
-    Normalize strings to make matching robust without embeddings:
-    - Lowercase
-    - Strip punctuation
-    - Collapse whitespace
-    - Tighten percent spacing
-    """
+    """Lowercase, strip punctuation (keep %), collapse spaces."""
     s = s.lower()
-    s = s.translate(str.maketrans("", "", string.punctuation))
+    # remove punctuation except % and $ (keep units/currency visible)
+    keep = set("%$")
+    s = "".join(ch for ch in s if (ch not in string.punctuation) or (ch in keep))
     s = re.sub(r"\s+", " ", s).strip()
-    s = s.replace("% ", "%")
     return s
 
+def _word_count(s: str) -> int:
+    return len(re.findall(r"\b\w+\b", s))
+
 def _fact_present(rewrite_norm: str, fact: str) -> bool:
-    """
-    Check if a fact (or any of its aliases) appears in the normalized rewrite.
-    """
     cands = [_norm(fact)] + [_norm(a) for a in ALIAS_MAP.get(fact, [])]
     return any(c in rewrite_norm for c in cands)
 
-def _nums(text: str):
+def _nums(text: str) -> set[str]:
     """
-    Extract numbers and units we care about:
-    - percents (e.g., 3.2%)
-    - money with optional suffix (e.g., $9.9B)
-    - plain numeric values (fallback)
+    Extract numbers we care about:
+      - percentages: 3.2%
+      - currency with or without suffix: $5.1B, $10, $7.5m
+      - plain numbers (int/float): 2024, 3.2
     """
-    return re.findall(r"\d+(?:\.\d+)?%|\$\d+(?:\.\d+)?[a-zA-Z]*|\d+(?:\.\d+)?", text)
+    pct = r"\d+(?:\.\d+)?%"
+    cur = r"\$\d+(?:\.\d+)?[a-zA-Z]?"
+    num = r"\b\d+(?:\.\d+)?\b"
+    return set(re.findall(f"{pct}|{cur}|{num}", text))
+
+def _has_sentence(text: str) -> bool:
+    # One clear sentence heuristic: ends with period or is a short single-sentence clause.
+    return bool(re.search(r"[.!?]\s*$", text)) or len(text.split()) >= MIN_DELTA_WORDS
+
+# ------------------------------ grading ------------------------------
 
 def grade(original: str, facts: List[str], banned: set[str], model_text: str) -> Tuple[bool, str]:
-    # 1) JSON + schema check
+    # 1) JSON parse & schema
     try:
         obj = json.loads(model_text)
-        if set(obj.keys()) != {"rewrite","preserved_facts","at_risk_facts","key_insight","delta_update"}:
-            return False, "Wrong keys"
-        rewrite = obj["rewrite"]
     except Exception as e:
-        return False, f"Bad JSON/schema: {e}"
+        return False, f"Bad JSON: {e}"
 
-    # 2) Compression bound
-    if len(rewrite) / max(1, len(original)) > 0.60:
-        return False, "Rewrite not concise enough (>60%)."
+    required_keys = {"rewrite", "preserved_facts", "at_risk_facts", "key_insight", "delta_update"}
+    if not isinstance(obj, dict) or set(obj.keys()) != required_keys:
+        return False, "Wrong keys (expected exactly: rewrite, preserved_facts, at_risk_facts, key_insight, delta_update)."
 
+    rewrite = obj.get("rewrite")
+    if not isinstance(rewrite, str) or not rewrite.strip():
+        return False, "rewrite must be a non-empty string."
+
+    if not isinstance(obj["preserved_facts"], list) or not isinstance(obj["at_risk_facts"], list):
+        return False, "preserved_facts and at_risk_facts must be lists."
+    if not isinstance(obj["key_insight"], str) or not isinstance(obj["delta_update"], str):
+        return False, "key_insight and delta_update must be strings."
+
+    # 2) Concision checks
+    ratio = len(rewrite) / max(1, len(original))
+    if ratio > CONCISION_LIMIT:
+        return False, f"Rewrite not concise enough (>60%). ratio={ratio:.2f} (len(rewrite)={len(rewrite)}, len(original)={len(original)})"
+
+    if WORD_CAP is not None and _word_count(rewrite) > WORD_CAP:
+        return False, f"Too many words (> {WORD_CAP}). words={_word_count(rewrite)}"
+
+    # 3) Banned terms (normalized substring)
     rew_norm = _norm(rewrite)
-
-    # 3) Banned terms (hallucination guard)
     for t in banned:
-        if _norm(t) in rew_norm:
+        if _norm(t) and _norm(t) in rew_norm:
             return False, f"Contains banned term: {t}"
 
-    # 4) Facts preserved (allow aliases)
+    # 4) Facts (allow aliases)
     missing = [f for f in facts if not _fact_present(rew_norm, f)]
     if missing:
         return False, f"Missing facts: {missing}"
 
-    # 5) Numbers & units preserved exactly
-    orig_nums = set(_nums(original))
-    rew_nums  = set(_nums(rewrite))
+    # 5) Numeric fidelity (ORIGINAL numbers must appear in rewrite)
+    orig_nums = _nums(original)
+    rew_nums = _nums(rewrite)
     if not orig_nums.issubset(rew_nums):
-        return False, f"Numeric/units lost: {sorted(orig_nums - rew_nums)}"
+        # Show exactly what’s missing to aid debugging
+        lost = sorted(orig_nums - rew_nums)
+        return False, f"Numeric info lost: {lost}"
 
-    # 6) ACE-style reflection (Reflector/Curator micro-outputs)
-    ki = obj.get("key_insight", "").lower()
-    if not any(re.search(p, ki) for p in INSIGHT_PATTERNS):
-        return False, "Key insight not ACE-aligned."
+    # 6) ACE alignment
+    ki = obj["key_insight"].strip().lower()
+    if not ki or not any(re.search(p, ki) for p in INSIGHT_PATTERNS):
+        return False, "key_insight not ACE-aligned (should mention preserving quantitative facts to avoid context collapse)."
 
-    du = obj.get("delta_update", "").strip()
-    if len(du.split()) < 6 or du.count(".") == 0:
-        return False, "delta_update must be one clear, actionable sentence."
+    du = obj["delta_update"].strip()
+    if len(du.split()) < MIN_DELTA_WORDS or not _has_sentence(du):
+        return False, "delta_update not a clear actionable sentence."
 
+    # If all checks pass
     return True, "pass"

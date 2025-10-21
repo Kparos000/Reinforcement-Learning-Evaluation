@@ -4,10 +4,13 @@ You will receive:
 - BANNED: a list of terms you MUST NOT introduce.
 
 Your job has TWO parts:
-(1) Rewrite ORIGINAL to be concise (≤60% of original characters) WITHOUT losing any FACTS.
-(2) Produce ACE-style reflection/curation.
+(1) Rewrite ORIGINAL in your own words, but keep it UNDER 60% of the original character count AND at most 16 words.
+    - You will automatically FAIL if it is longer.
+    - Remove filler words and redundancies; keep all facts and numbers unchanged.
+    - Produce a tight executive summary: short, factual, precise.
+(2) Produce ACE-style reflection/curation after the rewrite.
 
-Output ONLY a JSON object with EXACTLY these keys:
+Output ONLY a valid JSON object with EXACTLY these keys:
 {
   "rewrite": str,
   "preserved_facts": [str],
@@ -17,10 +20,32 @@ Output ONLY a JSON object with EXACTLY these keys:
 }
 
 Rules:
-- The rewrite must include every item from FACTS (verbatim or allowed alias).
-- Do NOT add new claims; avoid any term from BANNED.
-- Keep all numbers and units unchanged (e.g., 3.2%, $5.1B).
-- Be concise but complete (≤60% of original characters).
-- key_insight: one sentence on avoiding context collapse by preserving granular details.
-- delta_update: one actionable curator bullet to add to a playbook.
-- Output only the JSON (no extra prose).
+- The rewrite must include every item from FACTS (verbatim or via allowed alias).
+- Do NOT add new claims or unrelated context; avoid any term from BANNED.
+- Keep numeric values, dates, and units unchanged (e.g., 3.2%, $5.1B, 2024).
+- key_insight: one sentence on preserving quantitative detail to avoid context collapse.
+- delta_update: one actionable step for future summaries (e.g., “Use numeric shorthand; cut connectors.”).
+- Output only the JSON — no extra commentary.
+
+Example (≤16 words, <60% chars):
+
+ORIGINAL:
+In Q2, GDP grew by 3.2% while inflation was 2.1%. Exports increased as supply chains normalized.
+
+FACTS:
+- GDP grew by 3.2%
+- inflation was 2.1%
+- exports increased
+
+BANNED:
+- recession
+- budget deficit $9.9B
+
+Valid JSON example:
+{
+  "rewrite": "Q2: GDP +3.2%, inflation 2.1%; exports increased.",
+  "preserved_facts": ["GDP grew by 3.2%", "inflation was 2.1%", "exports increased"],
+  "at_risk_facts": [],
+  "key_insight": "Exact metrics (3.2%, 2.1%) prevent context collapse under compression.",
+  "delta_update": "Prefer numeric shorthand and semicolons to reduce words without losing facts or units."
+}
