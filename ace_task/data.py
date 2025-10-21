@@ -16,5 +16,5 @@ BANNED = {"recession", "budget deficit $9.9B"}
 ALIAS_MAP = {
     "GDP grew by 3.2%": ["GDP +3.2%"],
     "inflation was 2.1%": ["inflation 2.1%"],
-    "exports increased": ["exports rose", "exports grew"],  # added "exports grew" to reduce false fails
+    "exports increased": ["exports rose", "exports grew"],
 }
