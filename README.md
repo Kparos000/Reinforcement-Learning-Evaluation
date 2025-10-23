@@ -83,7 +83,26 @@ The script prints each run’s reason (pass/fail) and the final pass rate.
 
 The immediate next step is to replace the static prompting with a learning **policy** trained against this deterministic reward. Because the environment already exposes **State (S)**, **Action (A)**, and **Reward (R)**, you can plug in **any RL algorithm**—e.g., PPO, policy gradients, best-of-N with rejection sampling, or offline preference optimization—to optimize the model (or prompt parameters) to **maximize pass-rate**. Practically, sample actions (JSON rewrites) from the current policy, score them with `grader.py`, and update the policy to increase rewards; the `key_insight` and `delta_update` fields can also serve as auxiliary signals or evolving context per ACE.
 
+### Executive Summary
 
+I designed a deterministic reinforcement learning evaluation task inspired by Agentic Context Engineering (ACE): Evolving Contexts for Self-Improving Language Models (Zhang et al., 2025). ACE’s Generator → Reflector → Curator loop aims to prevent context collapse—the loss of essential facts during summarization. I chose it because precise, fact-preserving compression mirrors real ML workflows such as experiment reports, paper digests, and release summaries.
+
+The model’s goal is to rewrite a paragraph succinctly while preserving every factual, numerical, and unit-based element. It must output a structured JSON object containing four fields: rewrite, which holds the concise reformulation of the text; preserved_facts and at_risk_facts, which list what information remains intact or is in danger of being lost; key_insight, representing the Reflector’s analytical observation; and delta_update, representing the Curator’s actionable improvement rule derived from that reflection.
+A deterministic grader enforces schema validity, concision, numeric fidelity, alias coverage, and fact preservation. It also ensures the Reflector/Curator fields appear, so outputs are correct and improvable.
+
+The codebase includes:
+data.py – defines inputs, banned terms, and aliases to maintain authenticity and control the 10–40% pass rate.
+
+grader.py – the reward model, ensuring schema precision and anti-collapse checks.
+
+evaluate.py – runs multiple trials, aggregates pass rate (~40% on claude-3-5-haiku-latest), and explains failures.
+
+prompt.txt – mirrors the grader for full transparency and prompt–reward parity.
+
+Conceptually, the task fits the classic reinforcement learning framework where the state consists of the original paragraph and the associated rules, the action is the model’s structured rewrite of the paragraph, the reward is provided by a deterministic grader that evaluates the output, and the episode encompasses a single forward step from input to graded output.
+
+It teaches a valuable ML skill - context-safe summarization with quantitative verification - while offering measurable feedback and tunable difficulty.
+Based on the requirement of the task, I did not train a reinforcement learning model yet. I have built a small, ACE-inspired RL evaluation environment: the model outputs strict JSON summaries, a deterministic grader scores them, and an evaluator reports pass-rate. The next step will be to replace static prompting with a learned policy and train against this reward using algorithms like PPO, policy gradients, best-of-N/rejection sampling, or DPO/preference optimization.
 ---
 
 ## Reference
