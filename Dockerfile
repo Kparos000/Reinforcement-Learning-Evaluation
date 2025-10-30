@@ -17,9 +17,10 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
+# Copy dependency files and source code
 COPY pyproject.toml ./
 COPY README.md ./
+COPY ace_task/ ./ace_task/
 
 # Create virtual environment and install dependencies
 RUN python -m venv /opt/venv
