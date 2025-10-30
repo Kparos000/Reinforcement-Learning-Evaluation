@@ -1,6 +1,6 @@
 """Scenario registry for multi-domain evaluation."""
 
-from typing import Dict, List, Set
+from typing import List
 
 from .base import Scenario
 from .economics import EconomicsScenario
@@ -9,7 +9,7 @@ from .medical import MedicalScenario
 from .scientific import ScientificScenario
 
 # Registry of all available scenarios
-SCENARIO_REGISTRY: Dict[str, type[Scenario]] = {
+SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
     "economics": EconomicsScenario,
     "medical": MedicalScenario,
     "legal": LegalScenario,
@@ -31,7 +31,9 @@ def get_scenario(name: str) -> Scenario:
         KeyError: If scenario name not found
     """
     if name not in SCENARIO_REGISTRY:
-        raise KeyError(f"Unknown scenario '{name}'. Available: {list(SCENARIO_REGISTRY.keys())}")
+        raise KeyError(
+            f"Unknown scenario '{name}'. Available: {list(SCENARIO_REGISTRY.keys())}"
+        )
     return SCENARIO_REGISTRY[name]()
 
 

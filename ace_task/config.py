@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Literal, Optional
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -39,11 +39,11 @@ class EvaluationConfig(BaseModel):
 
     num_runs: int = Field(10, gt=0)
     random_seed: int = 42
-    max_words_variation: List[int] = Field(default_factory=lambda: [12, 14, 16])
+    max_words_variation: list[int] = Field(default_factory=lambda: [12, 14, 16])
     parallel_workers: int = Field(4, ge=1)
 
     @field_validator("max_words_variation")
-    def validate_word_variation(cls, v: List[int]) -> List[int]:
+    def validate_word_variation(cls, v: list[int]) -> list[int]:
         if not v:
             raise ValueError("max_words_variation cannot be empty")
         if any(w <= 0 for w in v):
@@ -55,10 +55,10 @@ class BestOfNConfig(BaseModel):
     """Best-of-N sampling configuration."""
 
     n_samples: int = Field(5, gt=0)
-    temperature_range: List[float] = Field(default_factory=lambda: [0.3, 0.7])
+    temperature_range: list[float] = Field(default_factory=lambda: [0.3, 0.7])
 
     @field_validator("temperature_range")
-    def validate_temp_range(cls, v: List[float]) -> List[float]:
+    def validate_temp_range(cls, v: list[float]) -> list[float]:
         if len(v) != 2:
             raise ValueError("temperature_range must have exactly 2 values [min, max]")
         if v[0] >= v[1]:
@@ -102,7 +102,7 @@ class ScenarioConfig(BaseModel):
 class ScenariosConfig(BaseModel):
     """Multi-scenario configuration."""
 
-    enabled: List[str] = Field(default_factory=lambda: ["economics"])
+    enabled: list[str] = Field(default_factory=lambda: ["economics"])
     economics: ScenarioConfig = Field(default_factory=ScenarioConfig)
     medical: ScenarioConfig = Field(default_factory=ScenarioConfig)
     legal: ScenarioConfig = Field(default_factory=ScenarioConfig)
@@ -114,7 +114,7 @@ class VisualizationConfig(BaseModel):
 
     enabled: bool = True
     output_dir: str = "results/visualizations"
-    formats: List[str] = Field(default_factory=lambda: ["png", "pdf"])
+    formats: list[str] = Field(default_factory=lambda: ["png", "pdf"])
     dpi: int = Field(300, gt=0)
 
 
@@ -157,7 +157,7 @@ class Config(BaseModel):
     reproducibility: ReproducibilityConfig = Field(default_factory=ReproducibilityConfig)
 
 
-def load_config(config_path: Optional[str] = None) -> Config:
+def load_config(config_path: str | None = None) -> Config:
     """
     Load configuration from YAML file with environment variable overrides.
 
@@ -171,16 +171,17 @@ def load_config(config_path: Optional[str] = None) -> Config:
         FileNotFoundError: If config file doesn't exist.
         ValueError: If config validation fails.
     """
+    config_file: Path
     if config_path is None:
-        config_path = Path(__file__).parent.parent / "config.yaml"
+        config_file = Path(__file__).parent.parent / "config.yaml"
     else:
-        config_path = Path(config_path)
+        config_file = Path(config_path)
 
-    if not config_path.exists():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
+    if not config_file.exists():
+        raise FileNotFoundError(f"Config file not found: {config_file}")
 
-    with open(config_path, "r", encoding="utf-8") as f:
-        config_dict = yaml.safe_load(f)
+    with open(config_file, "r", encoding="utf-8") as f:
+        config_dict = yaml.safe_load(f)  # type: ignore[assignment]
 
     # Environment variable overrides
     if api_key := os.getenv("ANTHROPIC_API_KEY"):

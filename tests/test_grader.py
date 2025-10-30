@@ -2,8 +2,6 @@
 
 import json
 
-import pytest
-
 from ace_task.data import ALIAS_MAP, BANNED, FACTS, ORIGINAL
 from ace_task.grader import _fact_present, _has_sentence, _norm, _nums, _word_count, grade
 

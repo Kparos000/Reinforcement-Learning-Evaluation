@@ -1,6 +1,5 @@
 """Tests for data fixtures and aliases."""
 
-import pytest
 
 from ace_task.data import ALIAS_MAP, BANNED, FACTS, ORIGINAL
 

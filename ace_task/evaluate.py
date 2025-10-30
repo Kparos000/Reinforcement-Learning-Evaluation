@@ -11,15 +11,17 @@ Run:
 """
 
 from __future__ import annotations
+
 import argparse
 import json
 import os
 import random
 from math import floor
 
-from dotenv import load_dotenv
 from anthropic import Anthropic
-from .data import ORIGINAL, FACTS, BANNED
+from dotenv import load_dotenv
+
+from .data import BANNED, FACTS, ORIGINAL
 from .grader import grade
 
 load_dotenv()
@@ -69,7 +71,7 @@ def run_once(client: Anthropic, model: str, max_chars: int, max_words: int) -> s
     return "".join(c.text for c in msg.content if c.type == "text").strip()
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=10, help="Number of independent attempts")
     ap.add_argument("--model", type=str, default="claude-3-5-haiku-latest")

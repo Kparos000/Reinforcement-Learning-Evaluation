@@ -2,13 +2,11 @@
 
 import os
 import tempfile
-from pathlib import Path
 
 import pytest
 import yaml
 
 from ace_task.config import (
-    Config,
     GraderConfig,
     ModelConfig,
     load_config,

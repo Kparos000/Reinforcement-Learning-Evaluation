@@ -6,7 +6,6 @@ from ace_task.scenarios import (
     EconomicsScenario,
     LegalScenario,
     MedicalScenario,
-    Scenario,
     ScientificScenario,
     get_scenario,
     list_scenarios,
