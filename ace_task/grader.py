@@ -18,8 +18,7 @@ from __future__ import annotations
 import json
 import re
 import string
-from typing import List, Tuple
-from .data import ALIAS_MAP
+from typing import Dict, List, Optional, Tuple
 
 CONCISION_LIMIT = 0.60   # 60% of original characters
 WORD_CAP = 16            # set to None to disable
@@ -44,8 +43,8 @@ def _norm(s: str) -> str:
 def _word_count(s: str) -> int:
     return len(re.findall(r"\b\w+\b", s))
 
-def _fact_present(rewrite_norm: str, fact: str) -> bool:
-    cands = [_norm(fact)] + [_norm(a) for a in ALIAS_MAP.get(fact, [])]
+def _fact_present(rewrite_norm: str, fact: str, alias_map: Dict[str, List[str]]) -> bool:
+    cands = [_norm(fact)] + [_norm(a) for a in alias_map.get(fact, [])]
     return any(c in rewrite_norm for c in cands)
 
 def _nums(text: str) -> set[str]:
@@ -57,7 +56,36 @@ def _nums(text: str) -> set[str]:
 def _has_sentence(text: str) -> bool:
     return bool(re.search(r"[.!?]\s*$", text)) or len(text.split()) >= MIN_DELTA_WORDS
 
-def grade(original: str, facts: List[str], banned: set[str], model_text: str) -> Tuple[bool, str]:
+def grade(
+    original: str,
+    facts: List[str],
+    banned: set[str],
+    model_text: str,
+    alias_map: Optional[Dict[str, List[str]]] = None,
+    concision_limit: Optional[float] = None,
+    word_cap: Optional[int] = None,
+) -> Tuple[bool, str]:
+    """
+    Grade a model's output against requirements.
+
+    Args:
+        original: Original text to compress
+        facts: Required facts to preserve
+        banned: Banned terms that must not appear
+        model_text: Model's JSON output to grade
+        alias_map: Optional aliases for facts
+        concision_limit: Optional custom concision limit (default 0.60)
+        word_cap: Optional custom word cap (default 16)
+
+    Returns:
+        Tuple of (pass: bool, reason: str)
+    """
+    if alias_map is None:
+        alias_map = {}
+    if concision_limit is None:
+        concision_limit = CONCISION_LIMIT
+    if word_cap is None:
+        word_cap = WORD_CAP
     # 1) JSON
     try:
         obj = json.loads(model_text)
@@ -78,10 +106,10 @@ def grade(original: str, facts: List[str], banned: set[str], model_text: str) ->
 
     # 2) Concision
     ratio = len(rewrite) / max(1, len(original))
-    if ratio > CONCISION_LIMIT:
-        return False, f"Rewrite not concise enough (>60%). ratio={ratio:.2f} (len(rewrite)={len(rewrite)}, len(original)={len(original)})"
-    if WORD_CAP is not None and _word_count(rewrite) > WORD_CAP:
-        return False, f"Too many words (> {WORD_CAP}). words={_word_count(rewrite)}"
+    if ratio > concision_limit:
+        return False, f"Rewrite not concise enough (>{concision_limit:.0%}). ratio={ratio:.2f} (len(rewrite)={len(rewrite)}, len(original)={len(original)})"
+    if word_cap is not None and _word_count(rewrite) > word_cap:
+        return False, f"Too many words (> {word_cap}). words={_word_count(rewrite)}"
 
     # 3) Banned terms
     rew_norm = _norm(rewrite)
@@ -90,7 +118,7 @@ def grade(original: str, facts: List[str], banned: set[str], model_text: str) ->
             return False, f"Contains banned term: {t}"
 
     # 4) Facts
-    missing = [f for f in facts if not _fact_present(rew_norm, f)]
+    missing = [f for f in facts if not _fact_present(rew_norm, f, alias_map)]
     if missing:
         return False, f"Missing facts: {missing}"
 
