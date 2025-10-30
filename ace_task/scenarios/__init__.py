@@ -31,9 +31,7 @@ def get_scenario(name: str) -> Scenario:
         KeyError: If scenario name not found
     """
     if name not in SCENARIO_REGISTRY:
-        raise KeyError(
-            f"Unknown scenario '{name}'. Available: {list(SCENARIO_REGISTRY.keys())}"
-        )
+        raise KeyError(f"Unknown scenario '{name}'. Available: {list(SCENARIO_REGISTRY.keys())}")
     return SCENARIO_REGISTRY[name]()
 
 

@@ -58,7 +58,7 @@ def run_once(client: Anthropic, model: str, max_chars: int, max_words: int) -> s
     msg = client.messages.create(
         model=model,
         max_tokens=400,
-        temperature=0.45,   # modest variability to avoid 0% / 100% determinism
+        temperature=0.45,  # modest variability to avoid 0% / 100% determinism
         top_p=0.9,
         system=(
             "Output ONLY strict JSON (no prose). Keep 'rewrite' within the provided character/word limits. "
@@ -93,7 +93,9 @@ def main():
             if isinstance(obj, dict) and "rewrite" in obj:
                 rw = obj["rewrite"]
                 ratio = len(rw) / max(1, len(ORIGINAL))
-                print(f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(ORIGINAL)}, ratio={ratio:.2f}")
+                print(
+                    f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(ORIGINAL)}, ratio={ratio:.2f}"
+                )
         except Exception:
             pass
 

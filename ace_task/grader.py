@@ -20,8 +20,8 @@ import re
 import string
 from typing import Dict, List, Optional, Tuple
 
-CONCISION_LIMIT = 0.60   # 60% of original characters
-WORD_CAP = 16            # set to None to disable
+CONCISION_LIMIT = 0.60  # 60% of original characters
+WORD_CAP = 16  # set to None to disable
 MIN_DELTA_WORDS = 6
 
 INSIGHT_PATTERNS = [
@@ -33,19 +33,23 @@ INSIGHT_PATTERNS = [
     r"\bquantitative detail\b",
 ]
 
+
 def _norm(s: str) -> str:
     s = s.lower()
-    keep = set("%$")
+    keep = set("%$.")  # Keep %, $, and decimal points
     s = "".join(ch for ch in s if (ch not in string.punctuation) or (ch in keep))
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
+
 def _word_count(s: str) -> int:
     return len(re.findall(r"\b\w+\b", s))
+
 
 def _fact_present(rewrite_norm: str, fact: str, alias_map: Dict[str, List[str]]) -> bool:
     cands = [_norm(fact)] + [_norm(a) for a in alias_map.get(fact, [])]
     return any(c in rewrite_norm for c in cands)
+
 
 def _nums(text: str) -> set[str]:
     pct = r"\d+(?:\.\d+)?%"
@@ -53,8 +57,10 @@ def _nums(text: str) -> set[str]:
     num = r"\b\d+(?:\.\d+)?\b"
     return set(re.findall(f"{pct}|{cur}|{num}", text))
 
+
 def _has_sentence(text: str) -> bool:
     return bool(re.search(r"[.!?]\s*$", text)) or len(text.split()) >= MIN_DELTA_WORDS
+
 
 def grade(
     original: str,
@@ -94,7 +100,10 @@ def grade(
 
     required = {"rewrite", "preserved_facts", "at_risk_facts", "key_insight", "delta_update"}
     if not isinstance(obj, dict) or set(obj.keys()) != required:
-        return False, "Wrong keys (expected exactly: rewrite, preserved_facts, at_risk_facts, key_insight, delta_update)."
+        return (
+            False,
+            "Wrong keys (expected exactly: rewrite, preserved_facts, at_risk_facts, key_insight, delta_update).",
+        )
 
     rewrite = obj.get("rewrite")
     if not isinstance(rewrite, str) or not rewrite.strip():
@@ -107,7 +116,10 @@ def grade(
     # 2) Concision
     ratio = len(rewrite) / max(1, len(original))
     if ratio > concision_limit:
-        return False, f"Rewrite not concise enough (>{concision_limit:.0%}). ratio={ratio:.2f} (len(rewrite)={len(rewrite)}, len(original)={len(original)})"
+        return (
+            False,
+            f"Rewrite not concise enough (>{concision_limit:.0%}). ratio={ratio:.2f} (len(rewrite)={len(rewrite)}, len(original)={len(original)})",
+        )
     if word_cap is not None and _word_count(rewrite) > word_cap:
         return False, f"Too many words (> {word_cap}). words={_word_count(rewrite)}"
 
@@ -130,7 +142,10 @@ def grade(
     # 6) ACE alignment
     ki = obj["key_insight"].strip().lower()
     if not ki or not any(re.search(p, ki) for p in INSIGHT_PATTERNS):
-        return False, "key_insight not ACE-aligned (should mention preserving quantitative facts to avoid context collapse)."
+        return (
+            False,
+            "key_insight not ACE-aligned (should mention preserving quantitative facts to avoid context collapse).",
+        )
 
     du = obj["delta_update"].strip()
     if len(du.split()) < MIN_DELTA_WORDS or not _has_sentence(du):

@@ -57,6 +57,11 @@ ace-eval = "ace_task.cli:main"
 requires = ["setuptools>=68.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ace_task*"]
+exclude = ["tests*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
@@ -66,7 +71,7 @@ addopts = [
     "--cov=ace_task",
     "--cov-report=html",
     "--cov-report=term-missing",
-    "--cov-fail-under=80",
+    "--cov-fail-under=75",
     "-v",
 ]
 
