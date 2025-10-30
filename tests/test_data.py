@@ -1,6 +1,5 @@
 """Tests for data fixtures and aliases."""
 
-
 from ace_task.data import ALIAS_MAP, BANNED, FACTS, ORIGINAL
 
 
