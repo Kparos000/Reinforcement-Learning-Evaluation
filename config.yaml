@@ -1,0 +1,91 @@
+# Configuration for RL-ACE Evaluation Framework
+# This file controls all hyperparameters, model settings, and evaluation parameters
+
+# Model Configuration
+model:
+  provider: "anthropic"  # anthropic, openai, or huggingface
+  name: "claude-3-5-haiku-latest"
+  max_tokens: 400
+  temperature: 0.45
+  top_p: 0.9
+
+# Grader Configuration
+grader:
+  concision_limit: 0.60  # Max 60% of original character count
+  word_cap: 16          # Max words in rewrite
+  min_delta_words: 6    # Minimum words in delta_update
+  strict_mode: true     # Fail on any validation error
+
+# Evaluation Configuration
+evaluation:
+  num_runs: 10
+  random_seed: 42
+  max_words_variation: [12, 14, 16]  # Per-run word cap variation
+  parallel_workers: 4
+
+# RL Algorithm Configuration
+rl:
+  algorithm: "best_of_n"  # best_of_n, reinforce, ppo
+
+  # Best-of-N specific
+  best_of_n:
+    n_samples: 5
+    temperature_range: [0.3, 0.7]
+
+  # REINFORCE specific
+  reinforce:
+    learning_rate: 0.001
+    gamma: 1.0  # Discount factor (1.0 for single-step)
+    baseline: "moving_average"  # none, moving_average, learned
+
+  # PPO specific
+  ppo:
+    learning_rate: 0.0003
+    gamma: 1.0
+    clip_epsilon: 0.2
+    epochs: 4
+    batch_size: 64
+
+# Scenarios Configuration
+scenarios:
+  enabled:
+    - economics
+    - medical
+    - legal
+    - scientific
+
+  # Per-scenario settings can override defaults
+  economics:
+    concision_limit: 0.60
+  medical:
+    concision_limit: 0.65  # Slightly more lenient for medical terms
+  legal:
+    concision_limit: 0.55  # Stricter for legal precision
+  scientific:
+    concision_limit: 0.60
+
+# Visualization Configuration
+visualization:
+  enabled: true
+  output_dir: "results/visualizations"
+  formats: ["png", "pdf"]
+  dpi: 300
+
+# Experiment Tracking
+tracking:
+  enabled: false
+  backend: "mlflow"  # mlflow or wandb
+  experiment_name: "ace-rl-evaluation"
+  run_name: null  # Auto-generated if null
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/ace_evaluation.log"
+
+# Reproducibility
+reproducibility:
+  seed: 42
+  deterministic: true
+  benchmark: false  # Set to true for performance benchmarking

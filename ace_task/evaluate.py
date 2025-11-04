@@ -11,15 +11,17 @@ Run:
 """
 
 from __future__ import annotations
+
 import argparse
 import json
 import os
 import random
 from math import floor
 
-from dotenv import load_dotenv
 from anthropic import Anthropic
-from .data import ORIGINAL, FACTS, BANNED
+from dotenv import load_dotenv
+
+from .data import BANNED, FACTS, ORIGINAL
 from .grader import grade
 
 load_dotenv()
@@ -58,7 +60,7 @@ def run_once(client: Anthropic, model: str, max_chars: int, max_words: int) -> s
     msg = client.messages.create(
         model=model,
         max_tokens=400,
-        temperature=0.45,   # modest variability to avoid 0% / 100% determinism
+        temperature=0.45,  # modest variability to avoid 0% / 100% determinism
         top_p=0.9,
         system=(
             "Output ONLY strict JSON (no prose). Keep 'rewrite' within the provided character/word limits. "
@@ -69,7 +71,7 @@ def run_once(client: Anthropic, model: str, max_chars: int, max_words: int) -> s
     return "".join(c.text for c in msg.content if c.type == "text").strip()
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=10, help="Number of independent attempts")
     ap.add_argument("--model", type=str, default="claude-3-5-haiku-latest")
@@ -93,7 +95,9 @@ def main():
             if isinstance(obj, dict) and "rewrite" in obj:
                 rw = obj["rewrite"]
                 ratio = len(rw) / max(1, len(ORIGINAL))
-                print(f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(ORIGINAL)}, ratio={ratio:.2f}")
+                print(
+                    f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(ORIGINAL)}, ratio={ratio:.2f}"
+                )
         except Exception:
             pass
 
