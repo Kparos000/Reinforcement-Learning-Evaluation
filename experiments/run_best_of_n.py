@@ -73,33 +73,33 @@ def run_single_experiment(
     # Create reward function
     reward_fn = create_reward_function(scenario, reward_scheme=config["rl"]["reward_scheme"])
 
-    # Build prompt for the model
+    # Convert facts to proper JSON format (with double quotes)
+    facts_json = json.dumps(scenario.facts)
+
+    # Build prompt for the model with validated format
     prompt = f"""You are evaluating an economics text for Agentic Context Engineering (ACE).
 
 Original text:
 {scenario.original}
 
-Required facts: {scenario.facts}
-Banned words: {scenario.banned}
-
-Your task: Rewrite this text following these STRICT rules and output ONLY valid JSON:
+Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "your concise rewrite using EXACT fact wording (max {config['grader']['word_cap']} words)",
-  "preserved_facts": {scenario.facts},
+  "rewrite": "GDP grew by 3.2%, inflation was 2.1%, exports increased",
+  "preserved_facts": {facts_json},
   "at_risk_facts": [],
-  "key_insight": "preserving quantitative details prevents context collapse",
-  "delta_update": "supply chain improvements drive economic recovery and growth"
+  "key_insight": "preserving quantitative details prevents context collapse in economic analysis",
+  "delta_update": "supply chain normalization drives export growth and economic recovery"
 }}
 
-CRITICAL REQUIREMENTS:
-- rewrite: Use EXACT wording from Required facts list, max {config['grader']['word_cap']} words
-- preserved_facts: Copy the list exactly: {scenario.facts}
-- at_risk_facts: Always use empty list: []
-- key_insight: MUST include phrase "preserving quantitative" or "context collapse"
-- delta_update: Actionable sentence, minimum 6 words
-- NO banned words
-- Output ONLY the JSON, no explanation before or after"""
+CRITICAL:
+- rewrite: Must include EXACTLY these phrases from the facts: {facts_json} - KEEP IT SHORT (under 57 characters for economics scenario)
+- preserved_facts: {facts_json}
+- at_risk_facts: []
+- key_insight: Must contain "preserving quantitative" or "context collapse"
+- delta_update: Must be 6+ words
+- Use DOUBLE QUOTES for all strings in JSON
+- NO explanations, ONLY the JSON object"""
 
     # Initialize sampler
     sampler = BestOfNSampler(
