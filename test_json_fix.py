@@ -18,7 +18,7 @@ scenario = get_scenario("economics")
 # Convert facts to proper JSON format (with double quotes)
 facts_json = json.dumps(scenario.facts)
 
-# NEW PROMPT with proper JSON formatting
+# NEW PROMPT with proper JSON formatting and SHORT rewrite
 prompt = f"""You are evaluating an economics text for Agentic Context Engineering (ACE).
 
 Original text:
@@ -27,7 +27,7 @@ Original text:
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "In Q2, GDP grew by 3.2%, inflation was 2.1%, exports increased.",
+  "rewrite": "GDP grew by 3.2%, inflation was 2.1%, exports increased",
   "preserved_facts": {facts_json},
   "at_risk_facts": [],
   "key_insight": "preserving quantitative details prevents context collapse in economic analysis",
@@ -35,7 +35,7 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 }}
 
 CRITICAL:
-- rewrite: Must include EXACTLY these phrases: "GDP grew by 3.2%", "inflation was 2.1%", "exports increased"
+- rewrite: Must include EXACTLY these phrases: "GDP grew by 3.2%", "inflation was 2.1%", "exports increased" - KEEP IT SHORT (under 57 characters)
 - preserved_facts: {facts_json}
 - at_risk_facts: []
 - key_insight: Must contain "preserving quantitative" or "context collapse"
