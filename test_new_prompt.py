@@ -14,25 +14,33 @@ with open("config.yaml") as f:
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 scenario = get_scenario("economics")
 
-# NEW PROMPT (from the fix)
+# NEW PROMPT (with ALL 5 required JSON keys!)
 prompt = f"""You are evaluating an economics text for Agentic Context Engineering (ACE).
 
 Original text:
 {scenario.original}
 
-Your task: Rewrite this text following these STRICT rules:
-1. Include ALL these EXACT facts: {scenario.facts}
-2. NEVER use these banned words: {scenario.banned}
-3. Keep the rewrite VERY concise (max {config['grader']['word_cap']} words)
-4. Output ONLY valid JSON in this exact format (no explanation):
+Required facts: {scenario.facts}
+Banned words: {scenario.banned}
+
+Your task: Rewrite this text following these STRICT rules and output ONLY valid JSON:
 
 {{
-  "rewrite": "your concise rewrite here (max {config['grader']['word_cap']} words)",
-  "key_insight": "main insight (6-8 words)",
-  "delta_update": "what changed (6-8 words)"
+  "rewrite": "your concise rewrite using EXACT fact wording (max {config['grader']['word_cap']} words)",
+  "preserved_facts": {scenario.facts},
+  "at_risk_facts": [],
+  "key_insight": "preserving quantitative details prevents context collapse",
+  "delta_update": "supply chain improvements drive economic recovery and growth"
 }}
 
-CRITICAL: Use the EXACT fact wording from the list above. Output ONLY the JSON object, nothing else."""
+CRITICAL REQUIREMENTS:
+- rewrite: Use EXACT wording from Required facts list, max {config['grader']['word_cap']} words
+- preserved_facts: Copy the list exactly: {scenario.facts}
+- at_risk_facts: Always use empty list: []
+- key_insight: MUST include phrase "preserving quantitative" or "context collapse"
+- delta_update: Actionable sentence, minimum 6 words
+- NO banned words
+- Output ONLY the JSON, no explanation before or after"""
 
 print("=" * 70)
 print("TESTING WITH NEW PROMPT")
