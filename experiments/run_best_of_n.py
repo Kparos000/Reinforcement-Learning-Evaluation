@@ -76,8 +76,15 @@ def run_single_experiment(
     # Convert facts to proper JSON format (with double quotes)
     facts_json = json.dumps(scenario.facts)
 
+    # Calculate concision limit (60% of original length)
+    max_chars = int(len(scenario.original) * 0.60)
+
+    # Create example rewrite by joining first 3 facts (or all if less than 3)
+    example_facts = scenario.facts[:min(3, len(scenario.facts))]
+    example_rewrite = ", ".join(example_facts)
+
     # Build prompt for the model with validated format
-    prompt = f"""You are evaluating an economics text for Agentic Context Engineering (ACE).
+    prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
 
 Original text:
 {scenario.original}
@@ -85,21 +92,22 @@ Original text:
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "GDP grew by 3.2%, inflation was 2.1%, exports increased",
+  "rewrite": "{example_rewrite}",
   "preserved_facts": {facts_json},
   "at_risk_facts": [],
-  "key_insight": "preserving quantitative details prevents context collapse in economic analysis",
-  "delta_update": "supply chain normalization drives export growth and economic recovery"
+  "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
+  "delta_update": "accurate fact preservation maintains semantic fidelity and enables reliable reasoning"
 }}
 
-CRITICAL:
-- rewrite: Must include EXACTLY these phrases from the facts: {facts_json} - KEEP IT SHORT (under 57 characters for economics scenario)
+CRITICAL RULES:
+- rewrite: Must include ALL these exact phrases: {facts_json}
+  Keep it VERY SHORT (under {max_chars} characters - example above is {len(example_rewrite)} chars)
 - preserved_facts: {facts_json}
-- at_risk_facts: []
-- key_insight: Must contain "preserving quantitative" or "context collapse"
-- delta_update: Must be 6+ words
-- Use DOUBLE QUOTES for all strings in JSON
-- NO explanations, ONLY the JSON object"""
+- at_risk_facts: [] (always empty list)
+- key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
+- delta_update: Must be meaningful sentence (8+ words)
+- Use DOUBLE QUOTES for all JSON strings
+- Output ONLY the JSON object, NO explanations"""
 
     # Initialize sampler
     sampler = BestOfNSampler(
