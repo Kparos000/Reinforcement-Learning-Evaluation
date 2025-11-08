@@ -79,8 +79,8 @@ def run_single_experiment(
     # Calculate concision limit (60% of original length)
     max_chars = int(len(scenario.original) * 0.60)
 
-    # Create example rewrite by joining ALL facts (this is what grader requires!)
-    example_rewrite = ", ".join(scenario.facts)
+    # Get word cap from config
+    word_cap = config["grader"]["word_cap"]
 
     # Build prompt for the model with validated format
     prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
@@ -91,7 +91,7 @@ Original text:
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "{example_rewrite}",
+  "rewrite": "your concise rewrite here",
   "preserved_facts": {facts_json},
   "at_risk_facts": [],
   "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
@@ -100,7 +100,7 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 
 CRITICAL RULES:
 - rewrite: Must include ALL these exact phrases: {facts_json}
-  Keep it VERY SHORT (under {max_chars} characters - example above is {len(example_rewrite)} chars)
+  Keep VERY concise (max {max_chars} chars AND max {word_cap} words)
 - preserved_facts: {facts_json}
 - at_risk_facts: [] (always empty list)
 - key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
