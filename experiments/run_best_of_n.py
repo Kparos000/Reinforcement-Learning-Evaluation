@@ -79,13 +79,19 @@ def run_single_experiment(
 Original text:
 {scenario.original}
 
-Your task: Rewrite this text following these rules:
-1. Include ALL these facts: {scenario.facts}
+Your task: Rewrite this text following these STRICT rules:
+1. Include ALL these EXACT facts: {scenario.facts}
 2. NEVER use these banned words: {scenario.banned}
-3. Keep it concise (max ~{config['grader']['word_cap']} words)
-4. Maintain accuracy and clarity
+3. Keep the rewrite VERY concise (max {config['grader']['word_cap']} words)
+4. Output ONLY valid JSON in this exact format (no explanation):
 
-Generate a rewritten version now:"""
+{{
+  "rewrite": "your concise rewrite here (max {config['grader']['word_cap']} words)",
+  "key_insight": "main insight (6-8 words)",
+  "delta_update": "what changed (6-8 words)"
+}}
+
+CRITICAL: Use the EXACT fact wording from the list above. Output ONLY the JSON object, nothing else."""
 
     # Initialize sampler
     sampler = BestOfNSampler(
