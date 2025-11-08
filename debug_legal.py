@@ -21,8 +21,8 @@ facts_json = json.dumps(scenario.facts)
 # Calculate concision limit
 max_chars = int(len(scenario.original) * 0.60)
 
-# Create example rewrite using ALL facts
-example_rewrite = ", ".join(scenario.facts)
+# Word cap (from config.yaml)
+word_cap = 16
 
 # Build the prompt
 prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
@@ -33,7 +33,7 @@ Original text:
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "{example_rewrite}",
+  "rewrite": "your concise rewrite here",
   "preserved_facts": {facts_json},
   "at_risk_facts": [],
   "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
@@ -42,7 +42,7 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 
 CRITICAL RULES:
 - rewrite: Must include ALL these exact phrases: {facts_json}
-  Keep it VERY SHORT (under {max_chars} characters - example above is {len(example_rewrite)} chars)
+  Keep VERY concise (max {max_chars} chars AND max {word_cap} words)
 - preserved_facts: {facts_json}
 - at_risk_facts: [] (always empty list)
 - key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
@@ -57,8 +57,7 @@ print(f"\nOriginal: {scenario.original}")
 print(f"Original length: {len(scenario.original)} chars")
 print(f"Facts: {scenario.facts}")
 print(f"Max chars allowed: {max_chars}")
-print(f"Example rewrite: {example_rewrite}")
-print(f"Example rewrite length: {len(example_rewrite)} chars")
+print(f"Max words allowed: {word_cap}")
 print(f"\nPrompt being sent to Claude:")
 print("-" * 80)
 print(prompt)
