@@ -85,7 +85,7 @@ def run_single_experiment(
     # Build alias information if available
     alias_info = ""
     if hasattr(scenario, 'alias_map') and scenario.alias_map:
-        alias_info = "\n\nAccepted shorter versions (use these to save space):\n"
+        alias_info = "\n\nAccepted shorter versions (use these to save space, but keep exact numeric values like $50,000 not $50K):\n"
         for fact, aliases in scenario.alias_map.items():
             alias_info += f'- "{fact}" can be: {json.dumps(aliases)}\n'
 
@@ -108,8 +108,9 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 }}
 
 CRITICAL RULES:
-- rewrite: Must include ALL required facts (use exact wording OR accepted shorter versions shown above)
+- rewrite: Must include ALL required facts (use exact wording OR accepted shorter versions)
   Keep VERY concise (max {max_chars} chars AND max {word_cap} words)
+  IMPORTANT: Keep numbers EXACTLY as they appear in original (e.g., $50,000 not $50K, 30 not 30d without space)
 - preserved_facts: {facts_json} (always use full fact names here, not aliases)
 - at_risk_facts: [] (always empty list)
 - key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
