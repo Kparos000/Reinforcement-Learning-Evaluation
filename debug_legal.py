@@ -24,11 +24,20 @@ max_chars = int(len(scenario.original) * 0.60)
 # Word cap (from config.yaml)
 word_cap = 16
 
+# Build alias information
+alias_info = ""
+if hasattr(scenario, 'alias_map') and scenario.alias_map:
+    alias_info = "\n\nAccepted shorter versions (use these to save space):\n"
+    for fact, aliases in scenario.alias_map.items():
+        alias_info += f'- "{fact}" can be: {json.dumps(aliases)}\n'
+
 # Build the prompt
 prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
 
 Original text:
 {scenario.original}
+
+Required facts: {facts_json}{alias_info}
 
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
@@ -41,9 +50,9 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 }}
 
 CRITICAL RULES:
-- rewrite: Must include ALL these exact phrases: {facts_json}
+- rewrite: Must include ALL required facts (use exact wording OR accepted shorter versions shown above)
   Keep VERY concise (max {max_chars} chars AND max {word_cap} words)
-- preserved_facts: {facts_json}
+- preserved_facts: {facts_json} (always use full fact names here, not aliases)
 - at_risk_facts: [] (always empty list)
 - key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
 - delta_update: Must be meaningful sentence (8+ words)
