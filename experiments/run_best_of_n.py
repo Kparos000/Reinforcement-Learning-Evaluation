@@ -79,9 +79,8 @@ def run_single_experiment(
     # Calculate concision limit (60% of original length)
     max_chars = int(len(scenario.original) * 0.60)
 
-    # Create example rewrite by joining first 3 facts (or all if less than 3)
-    example_facts = scenario.facts[:min(3, len(scenario.facts))]
-    example_rewrite = ", ".join(example_facts)
+    # Create example rewrite by joining ALL facts (this is what grader requires!)
+    example_rewrite = ", ".join(scenario.facts)
 
     # Build prompt for the model with validated format
     prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
