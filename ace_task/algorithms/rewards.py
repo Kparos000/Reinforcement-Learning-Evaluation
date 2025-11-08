@@ -74,14 +74,23 @@ class BinaryRewardFunction:
             1.0 if passes all grading criteria, 0.0 otherwise
         """
         try:
+            # Get alias_map from scenario if available, otherwise from grader_config
+            alias_map = self.grader_config.get("alias_map")
+            if alias_map is None and hasattr(self.scenario, 'alias_map'):
+                alias_map = self.scenario.alias_map
+
+            # Get concision_limit and word_cap from grader_config or use defaults
+            concision_limit = self.grader_config.get("concision_limit", 0.60)
+            word_cap = self.grader_config.get("word_cap", 16)
+
             passed, reason = grade(
                 original=self.scenario.original,
                 facts=self.scenario.facts,
                 banned=self.scenario.banned,
                 model_text=model_output,
-                alias_map=self.grader_config.get("alias_map"),
-                concision_limit=self.grader_config.get("concision_limit"),
-                word_cap=self.grader_config.get("word_cap"),
+                alias_map=alias_map,
+                concision_limit=concision_limit,
+                word_cap=word_cap,
             )
             return 1.0 if passed else 0.0
         except Exception as e:
