@@ -66,7 +66,7 @@ print("-" * 80)
 # Call Claude
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 response = client.messages.create(
-    model="claude-3-5-sonnet-20241022",
+    model="claude-3-5-haiku-latest",  # Use the model from config
     max_tokens=1000,
     temperature=1.0,
     messages=[{"role": "user", "content": prompt}]
