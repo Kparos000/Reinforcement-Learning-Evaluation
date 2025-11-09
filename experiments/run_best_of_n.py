@@ -86,6 +86,12 @@ def run_single_experiment(
     if scenario.name == "legal":
         # Legal requires specific aliases to meet word cap
         example_rewrite = "expires 12/31/2025, renewal $50,000, 30-day window, 90-day notice"
+    elif scenario.name == "finance":
+        # Finance has many decimals that inflate word count - use aliases
+        example_rewrite = "open $127.50, high $134.20, close $131.85, 4.7M shares, P/E 23.4x"
+    elif scenario.name == "sports":
+        # Sports also needs aliases to fit word cap
+        example_rewrite = "Lakers 112-98, LeBron 28pts, 9 reb, 7 ast, 47.3% FG, 14 3PT"
     else:
         # Other scenarios work with comma-separated facts
         example_rewrite = ", ".join(scenario.facts)
