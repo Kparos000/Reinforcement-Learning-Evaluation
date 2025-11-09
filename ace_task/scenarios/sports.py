@@ -42,7 +42,7 @@ class SportsScenario(Scenario):
     def alias_map(self) -> Dict[str, List[str]]:
         return {
             "Lakers won 112-98": ["Lakers 112-98", "W 112-98"],
-            "LeBron James 28 points": ["LeBron 28pts", "James 28 points"],
+            "LeBron James 28 points": ["LeBron 28pts", "James 28 points", "LeBron 28 points"],
             "9 rebounds": ["9 reb", "9 boards"],
             "7 assists": ["7 ast", "7 dimes"],
             "47.3% field goal": ["47.3% FG", "FG 47.3%"],

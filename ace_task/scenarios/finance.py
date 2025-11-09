@@ -43,8 +43,8 @@ class FinanceScenario(Scenario):
             "opened at $127.50": ["open $127.50", "$127.50 open"],
             "high of $134.20": ["high $134.20", "$134.20 high"],
             "closed at $131.85": ["close $131.85", "$131.85 close"],
-            "4.7 million shares": ["4.7M shares", "volume 4.7M"],
-            "P/E ratio 23.4x": ["P/E 23.4x", "23.4x P/E"],
+            "4.7 million shares": ["4.7M shares", "volume 4.7M", "4.7 million"],
+            "P/E ratio 23.4x": ["P/E 23.4x", "23.4x P/E", "P/E 23.4"],
         }
 
     @property
