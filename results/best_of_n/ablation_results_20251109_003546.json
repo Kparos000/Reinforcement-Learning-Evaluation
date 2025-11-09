@@ -1,0 +1,391 @@
+{
+  "experiment_type": "best_of_n_ablation",
+  "config": {
+    "n_samples": 5,
+    "temperature": 1.0,
+    "early_stop": true,
+    "ablation_n_values": [
+      1,
+      3,
+      5,
+      10,
+      20
+    ]
+  },
+  "scenarios": [
+    "economics",
+    "medical",
+    "legal",
+    "scientific"
+  ],
+  "n_values": [
+    1,
+    3,
+    5,
+    10,
+    20
+  ],
+  "experiments": [
+    {
+      "scenario": "economics",
+      "n": 1,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.9058668613433838,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:04.123878"
+    },
+    {
+      "scenario": "economics",
+      "n": 3,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 3,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.6616761684417725,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:06.787701"
+    },
+    {
+      "scenario": "economics",
+      "n": 5,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.817051887512207,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:08.605900"
+    },
+    {
+      "scenario": "economics",
+      "n": 10,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 10,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.9674079418182373,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:11.574527"
+    },
+    {
+      "scenario": "economics",
+      "n": 20,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 20,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.829254150390625,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:13.404714"
+    },
+    {
+      "scenario": "medical",
+      "n": 1,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.9677624702453613,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:15.373554"
+    },
+    {
+      "scenario": "medical",
+      "n": 3,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 3,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.828108787536621,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:17.202702"
+    },
+    {
+      "scenario": "medical",
+      "n": 5,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.815591812133789,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:19.019666"
+    },
+    {
+      "scenario": "medical",
+      "n": 10,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 10,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.9455537796020508,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:20.966422"
+    },
+    {
+      "scenario": "medical",
+      "n": 20,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 20,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.8932437896728516,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:22.863676"
+    },
+    {
+      "scenario": "legal",
+      "n": 1,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 1.8723766803741455,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:34:24.739933"
+    },
+    {
+      "scenario": "legal",
+      "n": 3,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 3,
+      "metadata": {
+        "n_requested": 3,
+        "n_generated": 3,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 5.578060150146484,
+        "unique_samples": 1,
+        "diversity_ratio": 0.3333333333333333
+      },
+      "timestamp": "2025-11-09T00:34:30.322463"
+    },
+    {
+      "scenario": "legal",
+      "n": 5,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 5,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 5,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 9.41942811012268,
+        "unique_samples": 1,
+        "diversity_ratio": 0.2
+      },
+      "timestamp": "2025-11-09T00:34:39.742914"
+    },
+    {
+      "scenario": "legal",
+      "n": 10,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 10,
+      "metadata": {
+        "n_requested": 10,
+        "n_generated": 10,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 18.607401371002197,
+        "unique_samples": 1,
+        "diversity_ratio": 0.1
+      },
+      "timestamp": "2025-11-09T00:34:58.354813"
+    },
+    {
+      "scenario": "legal",
+      "n": 20,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 20,
+      "metadata": {
+        "n_requested": 20,
+        "n_generated": 20,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 37.323540925979614,
+        "unique_samples": 1,
+        "diversity_ratio": 0.05
+      },
+      "timestamp": "2025-11-09T00:35:35.679693"
+    },
+    {
+      "scenario": "scientific",
+      "n": 1,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.0735347270965576,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:35:37.755058"
+    },
+    {
+      "scenario": "scientific",
+      "n": 3,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 3,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.075519323348999,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:35:39.834804"
+    },
+    {
+      "scenario": "scientific",
+      "n": 5,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.024306535720825,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:35:41.863389"
+    },
+    {
+      "scenario": "scientific",
+      "n": 10,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 10,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.0552618503570557,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:35:43.923097"
+    },
+    {
+      "scenario": "scientific",
+      "n": 20,
+      "best_reward": 1.0,
+      "avg_reward": 1.0,
+      "success_rate": 1.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 20,
+        "n_generated": 1,
+        "early_stopped": true,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.0486679077148438,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T00:35:45.976302"
+    }
+  ],
+  "timestamp": "2025-11-09T00:34:02.216559"
+}

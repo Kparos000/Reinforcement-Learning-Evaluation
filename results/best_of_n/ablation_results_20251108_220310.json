@@ -1,0 +1,61 @@
+{
+  "experiment_type": "best_of_n_ablation",
+  "config": {
+    "n_samples": 5,
+    "temperature": 1.0,
+    "early_stop": true,
+    "ablation_n_values": [
+      1,
+      3,
+      5,
+      10,
+      20
+    ]
+  },
+  "scenarios": [
+    "economics"
+  ],
+  "n_values": [
+    1,
+    5
+  ],
+  "experiments": [
+    {
+      "scenario": "economics",
+      "n": 1,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.7779321670532227,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-08T22:03:00.038936"
+    },
+    {
+      "scenario": "economics",
+      "n": 5,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 5,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 5,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 10.090165376663208,
+        "unique_samples": 5,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-08T22:03:10.130471"
+    }
+  ],
+  "timestamp": "2025-11-08T22:02:57.022589"
+}
