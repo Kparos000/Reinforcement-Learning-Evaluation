@@ -20,7 +20,7 @@ class FinanceScenario(Scenario):
     def original(self) -> str:
         return (
             "The stock opened at $127.50, reached a high of $134.20, and closed at $131.85 "
-            "with trading volume of 4.7 million shares. The price-to-earnings ratio stands at 23.4x."
+            "with trading volume of 4.7 million shares. The price-to-earnings ratio stands at 23.4."
         )
 
     @property
@@ -30,7 +30,7 @@ class FinanceScenario(Scenario):
             "high of $134.20",
             "closed at $131.85",
             "4.7 million shares",
-            "P/E ratio 23.4x",
+            "P/E ratio 23.4",
         ]
 
     @property
@@ -44,7 +44,7 @@ class FinanceScenario(Scenario):
             "high of $134.20": ["high $134.20", "$134.20 high"],
             "closed at $131.85": ["close $131.85", "$131.85 close"],
             "4.7 million shares": ["4.7M shares", "volume 4.7M", "4.7 million"],
-            "P/E ratio 23.4x": ["P/E 23.4x", "23.4x P/E", "P/E 23.4"],
+            "P/E ratio 23.4": ["P/E 23.4", "23.4 P/E", "P/E ratio 23.4"],
         }
 
     @property
