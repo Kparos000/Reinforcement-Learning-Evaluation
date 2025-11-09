@@ -1,0 +1,98 @@
+{
+  "experiment_type": "best_of_n_ablation",
+  "config": {
+    "n_samples": 5,
+    "temperature": 1.0,
+    "early_stop": true,
+    "ablation_n_values": [
+      1,
+      3,
+      5,
+      10,
+      20
+    ]
+  },
+  "scenarios": [
+    "finance",
+    "sports"
+  ],
+  "n_values": [
+    1,
+    5
+  ],
+  "experiments": [
+    {
+      "scenario": "finance",
+      "n": 1,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.2344813346862793,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T02:25:38.512450"
+    },
+    {
+      "scenario": "finance",
+      "n": 5,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 5,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 5,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 10.035223484039307,
+        "unique_samples": 1,
+        "diversity_ratio": 0.2
+      },
+      "timestamp": "2025-11-09T02:25:48.548754"
+    },
+    {
+      "scenario": "sports",
+      "n": 1,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 1,
+      "metadata": {
+        "n_requested": 1,
+        "n_generated": 1,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 2.0887882709503174,
+        "unique_samples": 1,
+        "diversity_ratio": 1.0
+      },
+      "timestamp": "2025-11-09T02:25:50.639140"
+    },
+    {
+      "scenario": "sports",
+      "n": 5,
+      "best_reward": 0.0,
+      "avg_reward": 0.0,
+      "success_rate": 0.0,
+      "num_samples_generated": 5,
+      "metadata": {
+        "n_requested": 5,
+        "n_generated": 5,
+        "early_stopped": false,
+        "temperature": 1.0,
+        "elapsed_seconds": 10.255136489868164,
+        "unique_samples": 1,
+        "diversity_ratio": 0.2
+      },
+      "timestamp": "2025-11-09T02:26:00.898529"
+    }
+  ],
+  "timestamp": "2025-11-09T02:25:36.277258"
+}
