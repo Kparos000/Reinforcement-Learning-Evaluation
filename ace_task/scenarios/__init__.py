@@ -4,9 +4,11 @@ from typing import List
 
 from .base import Scenario
 from .economics import EconomicsScenario
+from .finance import FinanceScenario
 from .legal import LegalScenario
 from .medical import MedicalScenario
 from .scientific import ScientificScenario
+from .sports import SportsScenario
 
 # Registry of all available scenarios
 SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
@@ -14,6 +16,8 @@ SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
     "medical": MedicalScenario,
     "legal": LegalScenario,
     "scientific": ScientificScenario,
+    "finance": FinanceScenario,
+    "sports": SportsScenario,
 }
 
 
@@ -46,6 +50,8 @@ __all__ = [
     "MedicalScenario",
     "LegalScenario",
     "ScientificScenario",
+    "FinanceScenario",
+    "SportsScenario",
     "get_scenario",
     "list_scenarios",
     "SCENARIO_REGISTRY",
