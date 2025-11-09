@@ -1,0 +1,45 @@
+============================================================
+BEST-OF-N ABLATION STUDY - SUMMARY REPORT
+============================================================
+
+Experiment Date: 2025-11-09T01:06:04.961530
+Scenarios: economics, medical, legal, scientific
+N Values Tested: [1, 3, 5, 10, 20]
+Total Experiments: 20
+
+RESULTS BY N:
+------------------------------------------------------------
+
+N = 1:
+  Success Rate: 100.0% ± 0.0%
+  Avg Reward: 1.000 ± 0.000
+  Experiments: 4
+
+N = 3:
+  Success Rate: 100.0% ± 0.0%
+  Avg Reward: 1.000 ± 0.000
+  Experiments: 4
+
+N = 5:
+  Success Rate: 100.0% ± 0.0%
+  Avg Reward: 1.000 ± 0.000
+  Experiments: 4
+
+N = 10:
+  Success Rate: 100.0% ± 0.0%
+  Avg Reward: 1.000 ± 0.000
+  Experiments: 4
+
+N = 20:
+  Success Rate: 100.0% ± 0.0%
+  Avg Reward: 1.000 ± 0.000
+  Experiments: 4
+
+KEY FINDINGS:
+------------------------------------------------------------
+• Baseline (N=1): 100.0% success rate
+• Best (N=20): 100.0% success rate
+• Absolute improvement: +0.0 percentage points
+• Relative improvement: 0.0%
+
+============================================================

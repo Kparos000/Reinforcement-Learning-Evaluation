@@ -101,7 +101,7 @@ class BestOfNSampler(RLAlgorithm):
 
         for i in range(self.n):
             if verbose:
-                print(f"  Generating sample {i+1}/{self.n}...", end=" ", flush=True)
+                print(f"  Generating sample {i + 1}/{self.n}...", end=" ", flush=True)
 
             # Generate sample
             sample = self._call_llm(prompt)
@@ -122,7 +122,7 @@ class BestOfNSampler(RLAlgorithm):
             # Early stopping: if we achieve perfect score, no need to continue
             if self.early_stop and reward >= 1.0:
                 if verbose:
-                    print(f"  Early stop: Perfect reward achieved at sample {i+1}")
+                    print(f"  Early stop: Perfect reward achieved at sample {i + 1}")
                 break
 
         elapsed = time.time() - start_time

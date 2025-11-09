@@ -14,7 +14,6 @@ Usage:
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -197,7 +196,9 @@ def generate_summary_report(results: dict, aggregated: dict, output_path: Path):
     for n in sorted(aggregated.keys()):
         data = aggregated[n]
         report.append(f"\nN = {n}:")
-        report.append(f"  Success Rate: {data['success_rate_mean']*100:.1f}% ± {data['success_rate_std']*100:.1f}%")
+        report.append(
+            f"  Success Rate: {data['success_rate_mean'] * 100:.1f}% ± {data['success_rate_std'] * 100:.1f}%"
+        )
         report.append(f"  Avg Reward: {data['avg_reward_mean']:.3f} ± {data['avg_reward_std']:.3f}")
         report.append(f"  Experiments: {data['n_experiments']}")
 
@@ -212,10 +213,10 @@ def generate_summary_report(results: dict, aggregated: dict, output_path: Path):
         baseline = success_rates[0]
         best = success_rates[-1]
         improvement = (best - baseline) * 100
-        report.append(f"• Baseline (N={n_values[0]}): {baseline*100:.1f}% success rate")
-        report.append(f"• Best (N={n_values[-1]}): {best*100:.1f}% success rate")
+        report.append(f"• Baseline (N={n_values[0]}): {baseline * 100:.1f}% success rate")
+        report.append(f"• Best (N={n_values[-1]}): {best * 100:.1f}% success rate")
         report.append(f"• Absolute improvement: +{improvement:.1f} percentage points")
-        report.append(f"• Relative improvement: {(best/baseline - 1)*100:.1f}%")
+        report.append(f"• Relative improvement: {(best / baseline - 1) * 100:.1f}%")
 
     report.append("")
     report.append("=" * 60)

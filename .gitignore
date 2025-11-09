@@ -8,6 +8,29 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+.virtualenv
 
 # Environment variables
 .env
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary experiment files (keep JSON results and plots)
+results/**/*.tmp
+results/**/*.log
+*.tmp
