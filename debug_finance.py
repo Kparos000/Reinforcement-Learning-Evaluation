@@ -3,6 +3,7 @@
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -12,6 +13,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from ace_task.grader import grade
 from ace_task.scenarios import get_scenario
+
+
+def _word_count(s: str) -> int:
+    """Grader's actual word count function."""
+    return len(re.findall(r"\b\w+\b", s))
 
 # Test finance scenario
 scenario = get_scenario("finance")
@@ -25,8 +31,8 @@ max_chars = int(len(scenario.original) * 0.60)
 # Word cap
 word_cap = 16
 
-# Create example rewrite (what run_best_of_n.py does)
-example_rewrite = ", ".join(scenario.facts)
+# Create example rewrite (UPDATED - using the new alias version)
+example_rewrite = "open $127.50, high $134.20, close $131.85, 4.7M shares, P/E 23.4x"
 
 print("=" * 80)
 print("FINANCE SCENARIO DEBUG")
@@ -38,13 +44,14 @@ print(f"Max chars allowed: {max_chars}")
 print(f"Max words allowed: {word_cap}")
 print(f"\nExample rewrite: {example_rewrite}")
 print(f"Example length: {len(example_rewrite)} chars")
-print(f"Example words: {len(example_rewrite.split())} words")
+print(f"Example words (split): {len(example_rewrite.split())} words")
+print(f"Example words (GRADER regex): {_word_count(example_rewrite)} words")
 
 if len(example_rewrite) > max_chars:
     print(f"\n⚠️  WARNING: Example EXCEEDS char limit! ({len(example_rewrite)} > {max_chars})")
 
-if len(example_rewrite.split()) > word_cap:
-    print(f"\n⚠️  WARNING: Example EXCEEDS word limit! ({len(example_rewrite.split())} > {word_cap})")
+if _word_count(example_rewrite) > word_cap:
+    print(f"\n⚠️  WARNING: Example EXCEEDS word limit! ({_word_count(example_rewrite)} > {word_cap})")
 
 # Build the prompt
 prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
