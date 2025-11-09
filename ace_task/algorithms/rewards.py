@@ -76,7 +76,7 @@ class BinaryRewardFunction:
         try:
             # Get alias_map from scenario if available, otherwise from grader_config
             alias_map = self.grader_config.get("alias_map")
-            if alias_map is None and hasattr(self.scenario, 'alias_map'):
+            if alias_map is None and hasattr(self.scenario, "alias_map"):
                 alias_map = self.scenario.alias_map
 
             # Get concision_limit and word_cap from grader_config or use defaults

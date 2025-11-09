@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from ace_task.scenarios import get_scenario
 from ace_task.grader import grade
+from ace_task.scenarios import get_scenario
 
 # Load legal scenario
 scenario = get_scenario("legal")
@@ -24,10 +24,10 @@ test_rewrites = [
 ]
 
 for i, rewrite in enumerate(test_rewrites, 1):
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"TEST {i}: {rewrite}")
     print(f"Length: {len(rewrite)} chars, {len(rewrite.split())} words")
-    print('='*80)
+    print("=" * 80)
 
     # Build full JSON output
     output = {
@@ -35,7 +35,7 @@ for i, rewrite in enumerate(test_rewrites, 1):
         "preserved_facts": scenario.facts,
         "at_risk_facts": [],
         "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
-        "delta_update": "accurate fact preservation maintains semantic fidelity and enables reliable reasoning"
+        "delta_update": "accurate fact preservation maintains semantic fidelity and enables reliable reasoning",
     }
 
     model_text = json.dumps(output)

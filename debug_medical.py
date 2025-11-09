@@ -10,6 +10,7 @@ import anthropic
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+from ace_task.grader import grade
 from ace_task.scenarios import get_scenario
 
 # Load medical scenario
@@ -57,7 +58,7 @@ print(f"\nOriginal: {scenario.original}")
 print(f"Facts: {scenario.facts}")
 print(f"Max chars allowed: {max_chars}")
 print(f"Example rewrite length: {len(example_rewrite)} chars")
-print(f"\nPrompt being sent to Claude:")
+print("\nPrompt being sent to Claude:")
 print("-" * 80)
 print(prompt)
 print("-" * 80)
@@ -68,11 +69,11 @@ response = client.messages.create(
     model="claude-3-5-haiku-latest",  # Use the model from config
     max_tokens=1000,
     temperature=1.0,
-    messages=[{"role": "user", "content": prompt}]
+    messages=[{"role": "user", "content": prompt}],
 )
 
 output = response.content[0].text
-print(f"\nClaude's response:")
+print("\nClaude's response:")
 print("-" * 80)
 print(output)
 print("-" * 80)
@@ -80,7 +81,7 @@ print("-" * 80)
 # Try to parse and grade
 try:
     parsed = json.loads(output)
-    print(f"\n✅ Valid JSON")
+    print("\n✅ Valid JSON")
     print(f"Keys: {list(parsed.keys())}")
     print(f"Rewrite: {parsed.get('rewrite', 'N/A')}")
     print(f"Rewrite length: {len(parsed.get('rewrite', ''))} chars (max {max_chars})")
@@ -88,8 +89,6 @@ except Exception as e:
     print(f"\n❌ JSON parsing failed: {e}")
 
 # Try grading
-from ace_task.grader import grade
-
 try:
     passed, reason = grade(
         original=scenario.original,

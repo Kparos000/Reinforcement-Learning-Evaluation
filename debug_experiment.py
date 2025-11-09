@@ -1,9 +1,11 @@
 """Debug script to see what Claude generates and why it fails."""
 
 import os
+
 from anthropic import Anthropic
-from ace_task.scenarios import get_scenario
+
 from ace_task.grader import grade
+from ace_task.scenarios import get_scenario
 
 # Set up client
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
@@ -18,7 +20,7 @@ print(f"\nOriginal text:\n{scenario.original}\n")
 print(f"Required facts: {scenario.facts}")
 print(f"Banned words: {scenario.banned}")
 print(f"Alias map: {scenario.alias_map}")
-print(f"Word cap: ~16 words")
+print("Word cap: ~16 words")
 print()
 
 # Build prompt (same as in run_best_of_n.py)
@@ -50,7 +52,7 @@ message = client.messages.create(
     model="claude-3-5-haiku-latest",
     max_tokens=400,
     temperature=1.0,
-    messages=[{"role": "user", "content": prompt}]
+    messages=[{"role": "user", "content": prompt}],
 )
 
 model_output = message.content[0].text
@@ -70,7 +72,7 @@ passed, reason = grade(
     facts=scenario.facts,
     banned=scenario.banned,
     model_text=model_output,
-    alias_map=scenario.alias_map
+    alias_map=scenario.alias_map,
 )
 
 print(f"\n{'✅ PASSED' if passed else '❌ FAILED'}: {passed}")
@@ -105,7 +107,7 @@ if not passed:
                 print(f"  ❌ MISSING: {fact}")
 
     # Check JSON format
-    if model_output.strip().startswith('{'):
+    if model_output.strip().startswith("{"):
         print("\n✅ Output appears to be JSON format")
     else:
         print("\n❌ Output is NOT JSON format (should be JSON)")

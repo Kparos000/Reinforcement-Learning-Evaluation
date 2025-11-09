@@ -1,11 +1,13 @@
 """Test with proper JSON formatting in prompt."""
 
-import os
 import json
-from anthropic import Anthropic
-from ace_task.scenarios import get_scenario
-from ace_task.grader import grade
+import os
+
 import yaml
+from anthropic import Anthropic
+
+from ace_task.grader import grade
+from ace_task.scenarios import get_scenario
 
 # Load config
 with open("config.yaml") as f:
@@ -55,7 +57,7 @@ message = client.messages.create(
     model=config["model"]["name"],
     max_tokens=config["model"]["max_tokens"],
     temperature=1.0,
-    messages=[{"role": "user", "content": prompt}]
+    messages=[{"role": "user", "content": prompt}],
 )
 
 output = message.content[0].text
@@ -69,7 +71,7 @@ passed, reason = grade(
     banned=scenario.banned,
     model_text=output,
     alias_map=scenario.alias_map,
-    word_cap=config['grader']['word_cap']
+    word_cap=config["grader"]["word_cap"],
 )
 
 print("=" * 70)

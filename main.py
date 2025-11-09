@@ -99,9 +99,7 @@ async def run_agent_loop(
 
                     # Call the appropriate tool handler
                     if tool_name == "python_expression":
-                        assert (
-                            isinstance(tool_input, dict) and "expression" in tool_input
-                        )
+                        assert isinstance(tool_input, dict) and "expression" in tool_input
                         if verbose:
                             print("\nInput:")
                             print("```")

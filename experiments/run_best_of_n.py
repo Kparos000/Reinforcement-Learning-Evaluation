@@ -63,9 +63,9 @@ def run_single_experiment(
         Dict with experiment results and metadata
     """
     if verbose:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Scenario: {scenario_name} | N={n}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
     # Load scenario
     scenario = get_scenario(scenario_name)
@@ -144,7 +144,7 @@ CRITICAL RULES:
     }
 
     if verbose:
-        print(f"\n📊 Results:")
+        print("\n📊 Results:")
         print(f"  Best reward: {result.best_reward:.2f}")
         print(f"  Avg reward: {result.avg_reward:.2f}")
         print(f"  Success rate: {result.success_rate:.1%}")

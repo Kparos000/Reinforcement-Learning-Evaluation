@@ -10,6 +10,7 @@ import anthropic
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+from ace_task.grader import grade
 from ace_task.scenarios import get_scenario
 
 # Load legal scenario
@@ -26,7 +27,7 @@ word_cap = 16
 
 # Build alias information
 alias_info = ""
-if hasattr(scenario, 'alias_map') and scenario.alias_map:
+if hasattr(scenario, "alias_map") and scenario.alias_map:
     alias_info = "\n\nAccepted shorter versions (use these to save space, but keep exact numeric values like $50,000 not $50K):\n"
     for fact, aliases in scenario.alias_map.items():
         alias_info += f'- "{fact}" can be: {json.dumps(aliases)}\n'
@@ -68,7 +69,7 @@ print(f"Original length: {len(scenario.original)} chars")
 print(f"Facts: {scenario.facts}")
 print(f"Max chars allowed: {max_chars}")
 print(f"Max words allowed: {word_cap}")
-print(f"\nPrompt being sent to Claude:")
+print("\nPrompt being sent to Claude:")
 print("-" * 80)
 print(prompt)
 print("-" * 80)
@@ -79,11 +80,11 @@ response = client.messages.create(
     model="claude-3-5-haiku-latest",
     max_tokens=1000,
     temperature=1.0,
-    messages=[{"role": "user", "content": prompt}]
+    messages=[{"role": "user", "content": prompt}],
 )
 
 output = response.content[0].text
-print(f"\nClaude's response:")
+print("\nClaude's response:")
 print("-" * 80)
 print(output)
 print("-" * 80)
@@ -91,7 +92,7 @@ print("-" * 80)
 # Try to parse and grade
 try:
     parsed = json.loads(output)
-    print(f"\n✅ Valid JSON")
+    print("\n✅ Valid JSON")
     print(f"Keys: {list(parsed.keys())}")
     print(f"Rewrite: {parsed.get('rewrite', 'N/A')}")
     print(f"Rewrite length: {len(parsed.get('rewrite', ''))} chars (max {max_chars})")
@@ -99,8 +100,6 @@ except Exception as e:
     print(f"\n❌ JSON parsing failed: {e}")
 
 # Try grading
-from ace_task.grader import grade
-
 try:
     passed, reason = grade(
         original=scenario.original,

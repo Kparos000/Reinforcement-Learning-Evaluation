@@ -1,10 +1,12 @@
 """Quick test to see if the prompt was updated and what Claude generates."""
 
 import os
-from anthropic import Anthropic
-from ace_task.scenarios import get_scenario
-from ace_task.grader import grade
+
 import yaml
+from anthropic import Anthropic
+
+from ace_task.grader import grade
+from ace_task.scenarios import get_scenario
 
 # Load config
 with open("config.yaml") as f:
@@ -26,7 +28,7 @@ Banned words: {scenario.banned}
 Your task: Rewrite this text following these STRICT rules and output ONLY valid JSON:
 
 {{
-  "rewrite": "your concise rewrite using EXACT fact wording (max {config['grader']['word_cap']} words)",
+  "rewrite": "your concise rewrite using EXACT fact wording (max {config["grader"]["word_cap"]} words)",
   "preserved_facts": {scenario.facts},
   "at_risk_facts": [],
   "key_insight": "preserving quantitative details prevents context collapse",
@@ -34,7 +36,7 @@ Your task: Rewrite this text following these STRICT rules and output ONLY valid 
 }}
 
 CRITICAL REQUIREMENTS:
-- rewrite: Use EXACT wording from Required facts list, max {config['grader']['word_cap']} words
+- rewrite: Use EXACT wording from Required facts list, max {config["grader"]["word_cap"]} words
 - preserved_facts: Copy the list exactly: {scenario.facts}
 - at_risk_facts: Always use empty list: []
 - key_insight: MUST include phrase "preserving quantitative" or "context collapse"
@@ -54,7 +56,7 @@ message = client.messages.create(
     model=config["model"]["name"],
     max_tokens=config["model"]["max_tokens"],
     temperature=1.0,
-    messages=[{"role": "user", "content": prompt}]
+    messages=[{"role": "user", "content": prompt}],
 )
 
 output = message.content[0].text
@@ -68,7 +70,7 @@ passed, reason = grade(
     banned=scenario.banned,
     model_text=output,
     alias_map=scenario.alias_map,
-    word_cap=config['grader']['word_cap']
+    word_cap=config["grader"]["word_cap"],
 )
 
 print("=" * 70)
