@@ -10,14 +10,24 @@ from .medical import MedicalScenario
 from .scientific import ScientificScenario
 from .sports import SportsScenario
 
+# Phase 2: Long-form scenarios
+from .medical_long import MedicalLongScenario
+from .business_long import BusinessLongScenario
+from .legal_long import LegalLongScenario
+
 # Registry of all available scenarios
 SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
+    # Phase 1: Short scenarios
     "economics": EconomicsScenario,
     "medical": MedicalScenario,
     "legal": LegalScenario,
     "scientific": ScientificScenario,
     "finance": FinanceScenario,
     "sports": SportsScenario,
+    # Phase 2: Long scenarios
+    "medical_long": MedicalLongScenario,
+    "business_long": BusinessLongScenario,
+    "legal_long": LegalLongScenario,
 }
 
 
@@ -52,6 +62,9 @@ __all__ = [
     "ScientificScenario",
     "FinanceScenario",
     "SportsScenario",
+    "MedicalLongScenario",
+    "BusinessLongScenario",
+    "LegalLongScenario",
     "get_scenario",
     "list_scenarios",
     "SCENARIO_REGISTRY",
