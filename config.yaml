@@ -53,6 +53,7 @@ rl:
 
 # Scenarios Configuration
 scenarios:
+  # Phase 1: Short scenarios
   enabled:
     - economics
     - medical
@@ -68,6 +69,17 @@ scenarios:
     concision_limit: 0.55  # Stricter for legal precision
   scientific:
     concision_limit: 0.60
+
+  # Phase 2: Long-form scenarios (1500-2500 chars, 30 facts)
+  medical_long:
+    concision_limit: 0.60
+    word_cap: 120  # Allow more words for longer documents
+  business_long:
+    concision_limit: 0.60
+    word_cap: 120
+  legal_long:
+    concision_limit: 0.60
+    word_cap: 120
 
 # Visualization Configuration
 visualization:
