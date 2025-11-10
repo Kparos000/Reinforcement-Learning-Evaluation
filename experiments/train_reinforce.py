@@ -24,41 +24,26 @@ from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
 
 def build_prompt(scenario, max_chars: int, word_cap: int) -> str:
     """
-    Build the prompt for the model.
+    Build a compact prompt that fits within GPT-2's 1024 token limit.
 
-    For Phase 2, we need to generate full ACE JSON output including
-    the compressed rewrite, preserved facts, etc.
+    We don't include the full original text since it can be 2500+ chars.
+    Instead, we just give the facts to include and constraints.
     """
     facts_json = json.dumps(scenario.facts)
 
-    prompt = f"""You are compressing text using Agentic Context Engineering (ACE).
+    # Truncate original to first 400 chars for context (optional)
+    original_preview = scenario.original[:400] + "..." if len(scenario.original) > 400 else scenario.original
 
-Original text ({len(scenario.original)} characters):
-{scenario.original}
+    prompt = f"""Compress this text preserving ALL facts.
 
-Required facts to preserve (JSON list):
-{facts_json}
+Preview: {original_preview}
 
-Your task: Generate ONLY valid JSON with these exact 5 keys:
+Facts (must include ALL): {facts_json}
 
-{{
-  "rewrite": "<compressed version here>",
-  "preserved_facts": {facts_json},
-  "at_risk_facts": [],
-  "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
-  "delta_update": "accurate fact preservation maintains semantic fidelity and enables reliable reasoning"
-}}
+Generate JSON:
+{{"rewrite": "compressed text here", "preserved_facts": {facts_json}, "at_risk_facts": [], "key_insight": "preserving quantitative details prevents context collapse", "delta_update": "accurate preservation maintains semantic fidelity"}}
 
-CRITICAL RULES:
-- rewrite: Must include ALL required facts, max {max_chars} characters AND max {word_cap} words
-- preserved_facts: Always use the full fact list above (not aliases)
-- at_risk_facts: Always empty list []
-- key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)
-- delta_update: Must be meaningful sentence (8+ words)
-- Use DOUBLE QUOTES for all JSON strings
-- Output ONLY the JSON object, NO explanations
-
-JSON output:"""
+Rules: max {max_chars} chars, {word_cap} words. JSON only:"""
 
     return prompt
 

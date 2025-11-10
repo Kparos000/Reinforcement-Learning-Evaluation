@@ -98,13 +98,18 @@ class REINFORCETrainer:
             Tuple of (generated_text, log_probs, token_ids)
         """
         # Encode prompt
-        input_ids = self.tokenizer.encode(prompt, return_tensors="pt").to(self.device)
+        input_ids = self.tokenizer.encode(prompt, return_tensors="pt", truncation=True, max_length=900).to(self.device)
+
+        # Check if prompt is too long
+        if input_ids.shape[1] > 900:
+            print(f"Warning: Prompt truncated from {input_ids.shape[1]} to 900 tokens")
 
         # Generate with sampling (not greedy)
+        # Use max_new_tokens instead of max_length to avoid confusion
         with torch.no_grad():
             outputs = self.model.generate(
                 input_ids,
-                max_length=self.config.max_length,
+                max_new_tokens=min(self.config.max_length, 512),  # Generate up to 512 new tokens
                 temperature=self.config.temperature,
                 do_sample=True,
                 pad_token_id=self.tokenizer.pad_token_id,
