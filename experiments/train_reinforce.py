@@ -24,26 +24,21 @@ from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
 
 def build_prompt(scenario, max_chars: int, word_cap: int) -> str:
     """
-    Build a compact prompt that fits within GPT-2's 1024 token limit.
+    Build a VERY compact prompt to fit GPT-2's 1024 token limit.
 
-    We don't include the full original text since it can be 2500+ chars.
-    Instead, we just give the facts to include and constraints.
+    Key constraint: prompt + generation must stay under 1024 tokens total.
+    With 30 facts, we need to be extremely concise.
     """
-    facts_json = json.dumps(scenario.facts)
+    # Only list first 10 facts as examples to save space
+    facts_sample = scenario.facts[:10]
+    facts_json = json.dumps(facts_sample)
 
-    # Truncate original to first 400 chars for context (optional)
-    original_preview = scenario.original[:400] + "..." if len(scenario.original) > 400 else scenario.original
+    # Ultra-minimal prompt - just sample facts and format
+    prompt = f"""Compress text to JSON. Include facts: {facts_json}... (and {len(scenario.facts)-10} more)
 
-    prompt = f"""Compress this text preserving ALL facts.
+Format: {{"rewrite":"compressed text","preserved_facts":[...],"at_risk_facts":[],"key_insight":"preserving details prevents collapse","delta_update":"preservation maintains fidelity"}}
 
-Preview: {original_preview}
-
-Facts (must include ALL): {facts_json}
-
-Generate JSON:
-{{"rewrite": "compressed text here", "preserved_facts": {facts_json}, "at_risk_facts": [], "key_insight": "preserving quantitative details prevents context collapse", "delta_update": "accurate preservation maintains semantic fidelity"}}
-
-Rules: max {max_chars} chars, {word_cap} words. JSON only:"""
+Max {word_cap} words:"""
 
     return prompt
 

@@ -97,19 +97,22 @@ class REINFORCETrainer:
         Returns:
             Tuple of (generated_text, log_probs, token_ids)
         """
-        # Encode prompt
-        input_ids = self.tokenizer.encode(prompt, return_tensors="pt", truncation=True, max_length=900).to(self.device)
+        # Encode prompt with strict truncation to leave room for generation
+        input_ids = self.tokenizer.encode(prompt, return_tensors="pt", truncation=True, max_length=600).to(self.device)
 
-        # Check if prompt is too long
-        if input_ids.shape[1] > 900:
-            print(f"Warning: Prompt truncated from {input_ids.shape[1]} to 900 tokens")
+        prompt_len = input_ids.shape[1]
+        if prompt_len > 500:
+            print(f"Warning: Long prompt ({prompt_len} tokens)")
+
+        # Calculate safe generation length
+        # GPT-2 max is 1024, so: prompt_len + max_new_tokens <= 1024
+        safe_gen_len = min(400, 1024 - prompt_len - 24)  # 24 token safety buffer
 
         # Generate with sampling (not greedy)
-        # Use max_new_tokens instead of max_length to avoid confusion
         with torch.no_grad():
             outputs = self.model.generate(
                 input_ids,
-                max_new_tokens=min(self.config.max_length, 512),  # Generate up to 512 new tokens
+                max_new_tokens=safe_gen_len,  # Dynamically calculated to stay under 1024
                 temperature=self.config.temperature,
                 do_sample=True,
                 pad_token_id=self.tokenizer.pad_token_id,
