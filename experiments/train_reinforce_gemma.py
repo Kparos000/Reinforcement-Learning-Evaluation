@@ -114,13 +114,13 @@ def train_scenario(
     print(f"Context window: 8,192 tokens (plenty of room!)")
     print(f"Device: {device}")
 
-    # Initialize REINFORCE trainer with Gemma-optimized settings
+    # Initialize REINFORCE trainer with CPU-optimized settings
     reinforce_config = REINFORCEConfig(
         learning_rate=float(config["rl"]["reinforce"]["learning_rate"]),
         gamma=float(config["rl"]["reinforce"]["gamma"]),
         baseline_type=config["rl"]["reinforce"]["baseline"],
-        max_length=1024,  # Max tokens to generate
-        temperature=0.7,  # Lower temp for more focused generation
+        max_length=400,  # Limit generation length (faster on CPU)
+        temperature=0.3,  # Low temp = faster, more focused generation
     )
 
     print("\nInitializing Gemma-2B trainer...")

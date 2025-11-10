@@ -102,29 +102,28 @@ class REINFORCETrainer:
 
         prompt_len = input_ids.shape[1]
 
-        # Get model's max position (context window)
-        model_max_length = getattr(self.model.config, 'max_position_embeddings', 2048)
+        # For ACE task, we need ~200-400 tokens for JSON output
+        # Don't generate more than necessary (faster on CPU!)
+        max_generation = 400  # Enough for JSON with facts
 
-        # Calculate safe generation length
-        # Leave room for prompt + generation + safety buffer
-        safe_gen_len = min(
-            self.config.max_length,  # User-specified max
-            model_max_length - prompt_len - 50  # Safety buffer
-        )
+        if self.config.max_length < max_generation:
+            max_generation = self.config.max_length
 
-        if safe_gen_len < 100:
-            print(f"Warning: Prompt very long ({prompt_len} tokens), only {safe_gen_len} tokens available for generation")
+        print(f"Generating up to {max_generation} tokens (prompt: {prompt_len} tokens)...")
 
-        # Generate with sampling (not greedy)
+        # Generate with early stopping (stops at EOS or max tokens)
         with torch.no_grad():
             outputs = self.model.generate(
                 input_ids,
-                max_new_tokens=safe_gen_len,
+                max_new_tokens=max_generation,
                 temperature=self.config.temperature,
                 do_sample=True,
                 pad_token_id=self.tokenizer.pad_token_id,
+                eos_token_id=self.tokenizer.eos_token_id,
                 return_dict_in_generate=True,
                 output_scores=True,
+                # Early stopping - stop when EOS is generated
+                early_stopping=True,
             )
 
         # Get generated tokens (excluding prompt)
