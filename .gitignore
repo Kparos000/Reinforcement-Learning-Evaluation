@@ -19,6 +19,10 @@ venv/
 .coverage
 htmlcov/
 
+# Local experiment results
+results/
+results/**
+
 # IDE
 .vscode/
 .idea/

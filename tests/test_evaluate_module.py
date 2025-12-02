@@ -19,3 +19,17 @@ def test_build_user_message_includes_limits(monkeypatch):
     assert "ORIGINAL:" in message
     assert "FACTS:" in message
     assert "BANNED:" in message
+
+
+def test_reward_stats_helper(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    if "ace_task.evaluate" in sys.modules:
+        del sys.modules["ace_task.evaluate"]
+    evaluate = importlib.import_module("ace_task.evaluate")
+
+    rewards = [0.1, 0.5, 0.9]
+    stats = evaluate._reward_stats(rewards)
+
+    assert stats["mean"] == sum(rewards) / len(rewards)
+    assert stats["min"] == min(rewards)
+    assert stats["max"] == max(rewards)

@@ -16,13 +16,15 @@ import argparse
 import json
 import os
 import random
+import statistics
 from math import floor
-from typing import Iterable
+from typing import Dict, Iterable, List
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from .grader import grade
+from .algorithms.rewards import dense_reward_from_grade
+from .grader import grade_detailed
 from .scenarios import get_scenario
 
 load_dotenv()
@@ -86,6 +88,17 @@ def run_once(
     return "".join(c.text for c in msg.content if c.type == "text").strip()
 
 
+def _reward_stats(rewards: List[float]) -> Dict[str, float]:
+    if not rewards:
+        return {"mean": 0.0, "median": 0.0, "min": 0.0, "max": 0.0}
+    return {
+        "mean": statistics.mean(rewards),
+        "median": statistics.median(rewards),
+        "min": min(rewards),
+        "max": max(rewards),
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=10, help="Number of independent attempts")
@@ -121,6 +134,7 @@ def main() -> None:
     random.seed()
 
     passes = 0
+    rewards: List[float] = []
     for i in range(1, args.runs + 1):
         # small per-run variation to induce phrasing changes, but keep tight
         word_choices: Iterable[int] = (
@@ -144,14 +158,14 @@ def main() -> None:
             obj = json.loads(out)
             if isinstance(obj, dict) and "rewrite" in obj:
                 rw = obj["rewrite"]
-                ratio = len(rw) / max(1, len(ORIGINAL))
+                ratio = len(rw) / max(1, len(scenario.original))
                 print(
-                    f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(ORIGINAL)}, ratio={ratio:.2f}"
+                    f"DEBUG: len(rewrite)={len(rw)}, len(original)={len(scenario.original)}, ratio={ratio:.2f}"
                 )
         except Exception:
             pass
 
-        ok, msg = grade(
+        grade = grade_detailed(
             original=scenario.original,
             facts=scenario.facts,
             banned=scenario.banned,
@@ -160,12 +174,20 @@ def main() -> None:
             concision_limit=concision_limit,
             word_cap=max_words,
         )
-        print(f"Run {i}: {'PASS' if ok else 'FAIL'} - {msg}")
-        passes += int(ok)
+        reward = dense_reward_from_grade(grade)
+        rewards.append(reward)
+        print(f"Run {i}: {'PASS' if grade.passed else 'FAIL'} - reward={reward:.2f} - {grade.reason}")
+        passes += int(grade.passed)
 
     rate = passes / args.runs
+    stats = _reward_stats(rewards)
     print("\n" + "=" * 60)
     print(f"Passed: {passes}/{args.runs} | Pass rate: {rate:.2%}")
+    print("Reward stats (dense):")
+    print(f"  Mean:   {stats['mean']:.3f}")
+    print(f"  Median: {stats['median']:.3f}")
+    print(f"  Min:    {stats['min']:.3f}")
+    print(f"  Max:    {stats['max']:.3f}")
     print("=" * 60)
 
 
