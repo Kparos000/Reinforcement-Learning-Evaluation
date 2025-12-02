@@ -25,11 +25,11 @@ try:
     from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
     from ace_task.scenarios import get_scenario
     from ace_task.algorithms.rewards import create_reward_function
-    print(f"✅ PyTorch {torch.__version__}")
-    print(f"✅ Transformers {transformers.__version__}")
-    print(f"✅ REINFORCE modules imported")
+    print(f"[OK] PyTorch {torch.__version__}")
+    print(f"[OK] Transformers {transformers.__version__}")
+    print(f"[OK] REINFORCE modules imported")
 except ImportError as e:
-    print(f"❌ Import failed: {e}")
+    print(f"[ERROR] Import failed: {e}")
     print("\nPlease install dependencies:")
     print("  pip install torch transformers accelerate sentencepiece protobuf")
     sys.exit(1)
@@ -37,12 +37,12 @@ except ImportError as e:
 # Test 2: Check device
 print("\n[2/6] Checking compute device...")
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"✅ Device: {device}")
+print(f"[OK] Device: {device}")
 if device == "cuda":
     print(f"   GPU: {torch.cuda.get_device_name(0)}")
     print(f"   Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 else:
-    print("   ℹ️  Training on CPU (slower but works)")
+    print("   [INFO]  Training on CPU (slower but works)")
     print("   Expected training time: 2-4 hours for all 3 scenarios")
 
 # Test 3: Check disk space
@@ -51,13 +51,13 @@ import shutil
 try:
     stat = shutil.disk_usage(".")
     free_gb = stat.free / (1024**3)
-    print(f"✅ Free disk space: {free_gb:.1f} GB")
+    print(f"[OK] Free disk space: {free_gb:.1f} GB")
     if free_gb < 10:
-        print(f"⚠️  Warning: Low disk space. Need ~6GB for Gemma-2B download + models")
+        print(f"Warning  Warning: Low disk space. Need ~6GB for Gemma-2B download + models")
     else:
         print(f"   Plenty of space for Gemma-2B (needs ~6GB)")
 except Exception as e:
-    print(f"⚠️  Could not check disk space: {e}")
+    print(f"Warning  Could not check disk space: {e}")
 
 # Test 4: Load Gemma-2B model
 print("\n[4/6] Loading Gemma-2B model...")
@@ -71,7 +71,7 @@ try:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
 
-    print(f"✅ Gemma-2B loaded successfully")
+    print(f"[OK] Gemma-2B loaded successfully")
     print(f"   Parameters: {model.num_parameters() / 1e9:.2f}B")
     print(f"   Context window: {model.config.max_position_embeddings} tokens")
 
@@ -83,13 +83,13 @@ try:
     output_text = tokenizer.decode(output[0], skip_special_tokens=True)
     print(f"   Input: '{test_input}'")
     print(f"   Output: '{output_text}'")
-    print(f"   ✅ Generation working!")
+    print(f"   [OK] Generation working!")
 
     # Clean up
     del model
     del tokenizer
 except Exception as e:
-    print(f"❌ Model loading failed: {e}")
+    print(f"[ERROR] Model loading failed: {e}")
     print("\nTroubleshooting:")
     print("  - Check internet connection (needs to download 4GB)")
     print("  - Ensure you have ~6GB free disk space")
@@ -100,13 +100,13 @@ except Exception as e:
 print("\n[5/6] Loading Phase 2 long scenario...")
 try:
     scenario = get_scenario("medical_long")
-    print(f"✅ Scenario loaded: {scenario.name}")
+    print(f"[OK] Scenario loaded: {scenario.name}")
     print(f"   Original length: {len(scenario.original)} chars")
     print(f"   Facts to preserve: {len(scenario.facts)}")
     print(f"   Target compression: {int(len(scenario.original) * 0.6)} chars (60%)")
     print(f"   Word cap: 120 words")
 except Exception as e:
-    print(f"❌ Scenario loading failed: {e}")
+    print(f"[ERROR] Scenario loading failed: {e}")
     sys.exit(1)
 
 # Test 6: Initialize REINFORCE trainer with Gemma
@@ -126,7 +126,7 @@ try:
         config=config,
         device="cpu",  # Use CPU for test
     )
-    print(f"✅ REINFORCE trainer initialized")
+    print(f"[OK] REINFORCE trainer initialized")
     print(f"   Model: Gemma-2B")
     print(f"   Context: 8,192 tokens")
     print(f"   Learning rate: {config.learning_rate}")
@@ -135,17 +135,17 @@ try:
     # Clean up
     del trainer
 except Exception as e:
-    print(f"❌ Trainer initialization failed: {e}")
+    print(f"[ERROR] Trainer initialization failed: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
 
 # All tests passed!
 print("\n" + "=" * 70)
-print("✅ ALL TESTS PASSED!")
+print("[OK] ALL TESTS PASSED!")
 print("=" * 70)
 print("\nYour system is ready for production REINFORCE training with Gemma-2B!")
-print("\n📋 Next Steps:")
+print("\nNext Steps Next Steps:")
 print("\n1. Quick test (30-45 min, validate training works):")
 print("   python experiments/train_reinforce_gemma.py --scenario medical_long --epochs 10")
 print()
@@ -157,7 +157,7 @@ print("   - Models saved to: results/reinforce/gemma-2b/")
 print("   - Ready for UI integration")
 print("   - Can proceed to Phase 3 (PPO)")
 print()
-print("💡 Tips:")
+print("Tips Tips:")
 print("   - Training on CPU: 2-4 hours total (can run overnight)")
 print("   - If you have GPU: add --device cuda for 3-5x speedup")
 print("   - Training progress shown in real-time")

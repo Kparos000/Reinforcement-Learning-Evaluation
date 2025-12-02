@@ -150,7 +150,7 @@ def train_scenario(
         # Track best
         if metrics['reward'] > best_reward:
             best_reward = metrics['reward']
-            print(f"🎉 New best reward: {best_reward:.2f}")
+            print(f"[OK] New best reward: {best_reward:.2f}")
 
         # Evaluation
         if epoch % eval_every == 0 or epoch == epochs:
@@ -176,7 +176,7 @@ def train_scenario(
 
             # Early stopping if consistently successful
             if eval_results['success_rate'] >= 0.8:
-                print(f"\n🎉 Success rate ≥80%! Training is effective.")
+                print(f"\n[OK] Success rate >=80%! Training is effective.")
 
     # Save final model
     save_path = Path(save_dir) / "gemma-2b" / scenario_name / f"epoch_{epochs}"

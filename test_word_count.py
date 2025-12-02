@@ -19,5 +19,5 @@ examples = {
 print("Word count test (must be <= 16 words):\n")
 for name, example in examples.items():
     count = _word_count(example)
-    status = "✅" if count <= 16 else "❌"
+    status = "[OK]" if count <= 16 else "[ERROR]"
     print(f"{status} {name:20} = {count:2} words | {example}")

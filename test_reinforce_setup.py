@@ -24,11 +24,11 @@ try:
     from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
     from ace_task.scenarios import get_scenario
     from ace_task.algorithms.rewards import create_reward_function
-    print(f"✅ PyTorch {torch.__version__}")
-    print(f"✅ Transformers {transformers.__version__}")
-    print(f"✅ REINFORCE modules imported")
+    print(f"[OK] PyTorch {torch.__version__}")
+    print(f"[OK] Transformers {transformers.__version__}")
+    print(f"[OK] REINFORCE modules imported")
 except ImportError as e:
-    print(f"❌ Import failed: {e}")
+    print(f"[ERROR] Import failed: {e}")
     print("\nPlease install dependencies:")
     print("  pip install torch transformers accelerate")
     sys.exit(1)
@@ -36,7 +36,7 @@ except ImportError as e:
 # Test 2: Check device
 print("\n[2/5] Checking compute device...")
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"✅ Device: {device}")
+print(f"[OK] Device: {device}")
 if device == "cuda":
     print(f"   GPU: {torch.cuda.get_device_name(0)}")
     print(f"   Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
@@ -52,25 +52,25 @@ try:
     print(f"   Loading {model_name}...")
     model = AutoModelForCausalLM.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    print(f"✅ Model loaded successfully")
+    print(f"[OK] Model loaded successfully")
     print(f"   Parameters: {model.num_parameters() / 1e6:.1f}M")
 
     # Clean up
     del model
     del tokenizer
 except Exception as e:
-    print(f"❌ Model loading failed: {e}")
+    print(f"[ERROR] Model loading failed: {e}")
     sys.exit(1)
 
 # Test 4: Load scenario
 print("\n[4/5] Loading Phase 2 scenario...")
 try:
     scenario = get_scenario("medical_long")
-    print(f"✅ Scenario loaded: {scenario.name}")
+    print(f"[OK] Scenario loaded: {scenario.name}")
     print(f"   Original length: {len(scenario.original)} chars")
     print(f"   Facts: {len(scenario.facts)}")
 except Exception as e:
-    print(f"❌ Scenario loading failed: {e}")
+    print(f"[ERROR] Scenario loading failed: {e}")
     sys.exit(1)
 
 # Test 5: Initialize REINFORCE trainer
@@ -87,7 +87,7 @@ try:
         config=config,
         device="cpu",  # Use CPU for test
     )
-    print(f"✅ REINFORCE trainer initialized")
+    print(f"[OK] REINFORCE trainer initialized")
     print(f"   Model: gpt2")
     print(f"   Learning rate: {config.learning_rate}")
     print(f"   Baseline type: {config.baseline_type}")
@@ -95,14 +95,14 @@ try:
     # Clean up
     del trainer
 except Exception as e:
-    print(f"❌ Trainer initialization failed: {e}")
+    print(f"[ERROR] Trainer initialization failed: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
 
 # All tests passed!
 print("\n" + "=" * 70)
-print("✅ ALL TESTS PASSED!")
+print("[OK] ALL TESTS PASSED!")
 print("=" * 70)
 print("\nYour system is ready for REINFORCE training!")
 print("\nNext steps:")

@@ -177,9 +177,9 @@ async def run_single_test(
     success = result == expected_answer
 
     if success:
-        print(f"✓ Run {run_id}: SUCCESS - Got {result}")
+        print(f"PASS Run {run_id}: SUCCESS - Got {result}")
     else:
-        print(f"✗ Run {run_id}: FAILURE - Got {result}, expected {expected_answer}")
+        print(f"FAIL Run {run_id}: FAILURE - Got {result}, expected {expected_answer}")
 
     return run_id, success, result
 

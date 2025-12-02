@@ -150,7 +150,7 @@ CRITICAL RULES:
     }
 
     if verbose:
-        print("\n📊 Results:")
+        print("\nResults:")
         print(f"  Best reward: {result.best_reward:.2f}")
         print(f"  Avg reward: {result.avg_reward:.2f}")
         print(f"  Success rate: {result.success_rate:.1%}")
@@ -220,7 +220,7 @@ def run_ablation_study(
         json.dump(results, f, indent=2)
 
     if verbose:
-        print(f"\n✅ Results saved to: {results_file}")
+        print(f"\nResults saved to: {results_file}")
 
     return results
 
@@ -300,7 +300,7 @@ def main():
     # Check for API key
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        print("\n❌ Error: ANTHROPIC_API_KEY environment variable not set")
+        print("\nError: ANTHROPIC_API_KEY environment variable not set")
         print("Set it with: export ANTHROPIC_API_KEY='your-key-here'")
         sys.exit(1)
 
@@ -325,10 +325,10 @@ def main():
         print(f"Results saved to: {args.output_dir}")
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  Experiment interrupted by user")
+        print("\n\nWarning: Experiment interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n\n❌ Error during experiment: {e}")
+        print(f"\n\nError during experiment: {e}")
         import traceback
 
         traceback.print_exc()

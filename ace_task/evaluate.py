@@ -25,10 +25,16 @@ from .data import BANNED, FACTS, ORIGINAL
 from .grader import grade
 
 load_dotenv()
-if not os.getenv("ANTHROPIC_API_KEY"):
-    raise EnvironmentError("Missing ANTHROPIC_API_KEY in .env")
 
 PROMPT_PATH = __package__.replace(".", "/") + "/prompt.txt"
+
+
+def require_api_key() -> str:
+    """Ensure ANTHROPIC_API_KEY is present for live evaluations."""
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise EnvironmentError("Missing ANTHROPIC_API_KEY in environment or .env file")
+    return api_key
 
 
 def build_user_message(max_chars: int, max_words: int) -> str:
@@ -77,6 +83,7 @@ def main() -> None:
     ap.add_argument("--model", type=str, default="claude-3-5-haiku-latest")
     args = ap.parse_args()
 
+    require_api_key()
     max_chars = floor(len(ORIGINAL) * 0.60)  # 60% limit (matches grader)
 
     client = Anthropic()
@@ -102,7 +109,7 @@ def main() -> None:
             pass
 
         ok, msg = grade(ORIGINAL, FACTS, BANNED, out)
-        print(f"Run {i}: {'✅ PASS' if ok else '❌ FAIL'} - {msg}")
+        print(f"Run {i}: {'PASS' if ok else 'FAIL'} - {msg}")
         passes += int(ok)
 
     rate = passes / args.runs
