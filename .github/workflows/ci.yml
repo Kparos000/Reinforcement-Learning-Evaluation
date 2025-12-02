@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - "**"
   pull_request:
-    branches: ["*"]
+    branches:
+      - "**"
 
 jobs:
   tests:
@@ -16,9 +18,10 @@ jobs:
 
     env:
       ANTHROPIC_API_KEY: dummy-key
+      RUN_SMOKE: "false"
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -26,13 +29,26 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/setup.cfg', '**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ".[dev,ml]"
+          pip install ".[dev,ml]"
 
       - name: Lint (ruff)
         run: ruff check .
 
       - name: Run tests
         run: python -m pytest
+
+      - name: Smoke test evaluator (optional)
+        if: env.RUN_SMOKE == 'true' && env.ANTHROPIC_API_KEY != ''
+        run: |
+          python -m ace_task.evaluate --runs 1 --scenario economics --temperature 0.55 --word-cap 16 --concision 0.65
