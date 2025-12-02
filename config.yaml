@@ -78,8 +78,8 @@ scenarios:
     concision_limit: 0.60
     word_cap: 120
   report_long:
-    concision_limit: 0.60
-    word_cap: 120
+    concision_limit: 0.70
+    word_cap: 140
 
 # Visualization Configuration
 visualization:

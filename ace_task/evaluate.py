@@ -62,16 +62,24 @@ def build_user_message(max_chars: int, max_words: int, scenario) -> str:
     )
 
 
-def run_once(client: Anthropic, model: str, max_chars: int, max_words: int, scenario) -> str:
+def run_once(
+    client: Anthropic,
+    model: str,
+    max_chars: int,
+    max_words: int,
+    scenario,
+    temperature: float,
+) -> str:
     """Send one prompt to the model and return its text response."""
     msg = client.messages.create(
         model=model,
         max_tokens=500,
-        temperature=0.60,  # slightly higher to promote varied phrasing
+        temperature=temperature,  # adjustable to tune pass-rate
         top_p=0.9,
         system=(
             "Output ONLY strict JSON (no prose). Keep 'rewrite' within the provided character/word limits. "
-            "Preserve all facts and numbers; avoid banned terms and extra claims."
+            "Preserve all facts and numbers; avoid banned terms and extra claims. "
+            "Your key_insight MUST explicitly mention preserving quantitative details to avoid context collapse."
         ),
         messages=[{"role": "user", "content": build_user_message(max_chars, max_words, scenario)}],
     )
@@ -83,6 +91,12 @@ def main() -> None:
     ap.add_argument("--runs", type=int, default=10, help="Number of independent attempts")
     ap.add_argument("--model", type=str, default="claude-3-5-haiku-latest")
     ap.add_argument("--scenario", type=str, default="report_long", help="Scenario to evaluate")
+    ap.add_argument(
+        "--temperature",
+        type=float,
+        default=0.60,
+        help="Sampling temperature (higher = more diverse, lower = more deterministic)",
+    )
     ap.add_argument(
         "--concision", type=float, default=None, help="Override concision limit (0-1). Default uses scenario length x 0.60."
     )
@@ -96,7 +110,9 @@ def main() -> None:
 
     require_api_key()
     scenario = get_scenario(args.scenario)
-    concision_limit = args.concision if args.concision is not None else 0.60
+    concision_limit = args.concision
+    if concision_limit is None:
+        concision_limit = getattr(scenario, "concision_limit", None) or 0.60
     max_chars = floor(len(scenario.original) * concision_limit)
 
     base_word_cap = args.word_cap or getattr(scenario, "word_cap", None) or 16
@@ -114,7 +130,14 @@ def main() -> None:
         )
         max_words = random.choice(list(word_choices))
         print(f"\nRunning evaluation {i}/{args.runs}... (MAX_WORDS={max_words})")
-        out = run_once(client, args.model, max_chars, max_words, scenario)
+        out = run_once(
+            client=client,
+            model=args.model,
+            max_chars=max_chars,
+            max_words=max_words,
+            scenario=scenario,
+            temperature=args.temperature,
+        )
 
         # Debug: show ratio if the output is JSON with a rewrite
         try:

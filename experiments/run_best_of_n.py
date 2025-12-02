@@ -32,7 +32,9 @@ import yaml
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from ace_task.algorithms import BestOfNSampler, create_reward_function
+# Import directly from modules to avoid optional torch dependency
+from ace_task.algorithms.best_of_n import BestOfNSampler
+from ace_task.algorithms.rewards import create_reward_function
 from ace_task.scenarios import get_scenario, list_scenarios
 
 
@@ -76,11 +78,12 @@ def run_single_experiment(
     # Convert facts to proper JSON format (with double quotes)
     facts_json = json.dumps(scenario.facts)
 
-    # Calculate concision limit (60% of original length)
-    max_chars = int(len(scenario.original) * 0.60)
+    # Calculate concision limit (allow scenario override)
+    concision_limit = getattr(scenario, "concision_limit", None) or config["grader"]["concision_limit"]
+    max_chars = int(len(scenario.original) * concision_limit)
 
-    # Get word cap from config
-    word_cap = config["grader"]["word_cap"]
+    # Get word cap (prefer scenario-specific)
+    word_cap = getattr(scenario, "word_cap", None) or config["grader"]["word_cap"]
 
     # Create working example rewrite (tested to pass grader)
     if scenario.name == "legal":
@@ -97,6 +100,11 @@ def run_single_experiment(
         example_rewrite = ", ".join(scenario.facts)
 
     # Build prompt for the model with validated format
+    if len(scenario.facts) > 15:
+        rewrite_template = "; ".join(scenario.facts)
+    else:
+        rewrite_template = example_rewrite
+
     prompt = f"""You are rewriting text for Agentic Context Engineering (ACE).
 
 Original text:
@@ -107,7 +115,7 @@ Required facts: {facts_json}
 Your task: Output ONLY valid JSON with these exact 5 keys:
 
 {{
-  "rewrite": "{example_rewrite}",
+  "rewrite": "{rewrite_template}",
   "preserved_facts": {facts_json},
   "at_risk_facts": [],
   "key_insight": "preserving quantitative details prevents context collapse in domain-specific analysis",
@@ -115,8 +123,7 @@ Your task: Output ONLY valid JSON with these exact 5 keys:
 }}
 
 CRITICAL RULES:
-- rewrite: Use the EXACT format shown in example above (it includes all required facts)
-  Max {max_chars} chars AND max {word_cap} words
+- rewrite: MUST include every required fact. Keep Max {max_chars} chars AND max {word_cap} words.
 - preserved_facts: {facts_json} (always use full fact names, not aliases)
 - at_risk_facts: [] (always empty list)
 - key_insight: Must mention "preserving quantitative" or "context collapse" (8+ words)

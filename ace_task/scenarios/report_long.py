@@ -109,4 +109,8 @@ class ReportLongScenario(Scenario):
 
     @property
     def word_cap(self) -> int:
-        return 120
+        return 140
+
+    @property
+    def concision_limit(self) -> float:
+        return 0.70

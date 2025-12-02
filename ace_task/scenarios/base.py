@@ -66,5 +66,10 @@ class Scenario(ABC):
         """Optional scenario-specific word cap for rewrites."""
         return None
 
+    @property
+    def concision_limit(self) -> float | None:
+        """Optional scenario-specific concision limit (0-1)."""
+        return None
+
     def __str__(self) -> str:
         return f"{self.name} ({self.domain}, {self.difficulty})"
