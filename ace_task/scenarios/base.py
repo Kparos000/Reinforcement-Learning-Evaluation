@@ -61,5 +61,10 @@ class Scenario(ABC):
         """
         return "medium"
 
+    @property
+    def word_cap(self) -> int | None:
+        """Optional scenario-specific word cap for rewrites."""
+        return None
+
     def __str__(self) -> str:
         return f"{self.name} ({self.domain}, {self.difficulty})"

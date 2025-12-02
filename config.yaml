@@ -55,10 +55,7 @@ rl:
 scenarios:
   # Phase 1: Short scenarios
   enabled:
-    - economics
-    - medical
-    - legal
-    - scientific
+    - report_long
 
   # Per-scenario settings can override defaults
   economics:
@@ -78,6 +75,9 @@ scenarios:
     concision_limit: 0.60
     word_cap: 120
   legal_long:
+    concision_limit: 0.60
+    word_cap: 120
+  report_long:
     concision_limit: 0.60
     word_cap: 120
 

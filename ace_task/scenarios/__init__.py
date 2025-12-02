@@ -9,6 +9,7 @@ from .legal import LegalScenario
 from .medical import MedicalScenario
 from .scientific import ScientificScenario
 from .sports import SportsScenario
+from .report_long import ReportLongScenario
 
 # Phase 2: Long-form scenarios
 from .medical_long import MedicalLongScenario
@@ -24,6 +25,7 @@ SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
     "scientific": ScientificScenario,
     "finance": FinanceScenario,
     "sports": SportsScenario,
+    "report_long": ReportLongScenario,
     # Phase 2: Long scenarios
     "medical_long": MedicalLongScenario,
     "business_long": BusinessLongScenario,
@@ -62,6 +64,7 @@ __all__ = [
     "ScientificScenario",
     "FinanceScenario",
     "SportsScenario",
+    "ReportLongScenario",
     "MedicalLongScenario",
     "BusinessLongScenario",
     "LegalLongScenario",
