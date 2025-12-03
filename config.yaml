@@ -26,7 +26,7 @@ evaluation:
 # RL Algorithm Configuration
 rl:
   algorithm: "best_of_n"  # best_of_n, reinforce, ppo
-  reward_scheme: "binary"  # binary, partial (Phase 2), dense (Phase 3)
+  reward_scheme: "dense"  # binary, partial (Phase 2), dense (Phase 3)
 
   # Best-of-N specific
   best_of_n:
