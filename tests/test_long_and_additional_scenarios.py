@@ -1,4 +1,10 @@
-from ace_task.scenarios import BusinessLongScenario, FinanceScenario, LegalLongScenario, MedicalLongScenario, SportsScenario
+from ace_task.scenarios import (
+    BusinessLongScenario,
+    FinanceScenario,
+    LegalLongScenario,
+    MedicalLongScenario,
+    SportsScenario,
+)
 
 
 def test_long_scenarios_have_facts_and_aliases():

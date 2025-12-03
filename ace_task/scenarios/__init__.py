@@ -3,18 +3,19 @@
 from typing import List
 
 from .base import Scenario
+from .business_long import BusinessLongScenario
 from .economics import EconomicsScenario
 from .finance import FinanceScenario
 from .legal import LegalScenario
+from .legal_long import LegalLongScenario
 from .medical import MedicalScenario
-from .scientific import ScientificScenario
-from .sports import SportsScenario
-from .report_long import ReportLongScenario
 
 # Phase 2: Long-form scenarios
 from .medical_long import MedicalLongScenario
-from .business_long import BusinessLongScenario
-from .legal_long import LegalLongScenario
+from .report_long import ReportLongScenario
+from .report_top15 import ReportTop15Scenario
+from .scientific import ScientificScenario
+from .sports import SportsScenario
 
 # Registry of all available scenarios
 SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
@@ -26,6 +27,7 @@ SCENARIO_REGISTRY: dict[str, type[Scenario]] = {
     "finance": FinanceScenario,
     "sports": SportsScenario,
     "report_long": ReportLongScenario,
+    "report_top15": ReportTop15Scenario,
     # Phase 2: Long scenarios
     "medical_long": MedicalLongScenario,
     "business_long": BusinessLongScenario,
@@ -65,6 +67,7 @@ __all__ = [
     "FinanceScenario",
     "SportsScenario",
     "ReportLongScenario",
+    "ReportTop15Scenario",
     "MedicalLongScenario",
     "BusinessLongScenario",
     "LegalLongScenario",

@@ -21,12 +21,13 @@ print("\n[1/5] Checking imports...")
 try:
     import torch
     import transformers
-    from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
-    from ace_task.scenarios import get_scenario
+
+    from ace_task.algorithms.reinforce import REINFORCEConfig, REINFORCETrainer
     from ace_task.algorithms.rewards import create_reward_function
+    from ace_task.scenarios import get_scenario
     print(f"[OK] PyTorch {torch.__version__}")
     print(f"[OK] Transformers {transformers.__version__}")
-    print(f"[OK] REINFORCE modules imported")
+    print("[OK] REINFORCE modules imported")
 except ImportError as e:
     print(f"[ERROR] Import failed: {e}")
     print("\nPlease install dependencies:")
@@ -52,7 +53,7 @@ try:
     print(f"   Loading {model_name}...")
     model = AutoModelForCausalLM.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    print(f"[OK] Model loaded successfully")
+    print("[OK] Model loaded successfully")
     print(f"   Parameters: {model.num_parameters() / 1e6:.1f}M")
 
     # Clean up
@@ -87,8 +88,8 @@ try:
         config=config,
         device="cpu",  # Use CPU for test
     )
-    print(f"[OK] REINFORCE trainer initialized")
-    print(f"   Model: gpt2")
+    print("[OK] REINFORCE trainer initialized")
+    print("   Model: gpt2")
     print(f"   Learning rate: {config.learning_rate}")
     print(f"   Baseline type: {config.baseline_type}")
 

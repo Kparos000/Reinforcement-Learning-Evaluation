@@ -91,7 +91,7 @@ response = client.messages.create(
 )
 
 output = response.content[0].text
-print(f"\nClaude's response:")
+print("\nClaude's response:")
 print("-" * 80)
 print(output)
 print("-" * 80)

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as functional
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
@@ -137,7 +137,7 @@ class REINFORCETrainer:
             # Get logits for this step
             logits = outputs.scores[i][0]  # Shape: (vocab_size,)
             # Convert to log probabilities
-            log_prob = F.log_softmax(logits, dim=-1)
+            log_prob = functional.log_softmax(logits, dim=-1)
             # Get log prob of selected token
             log_probs.append(log_prob[token_id].item())
 

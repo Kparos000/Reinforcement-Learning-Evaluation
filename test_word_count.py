@@ -3,6 +3,7 @@
 
 import re
 
+
 def _word_count(s: str) -> int:
     """Grader's word count function."""
     return len(re.findall(r"\b\w+\b", s))

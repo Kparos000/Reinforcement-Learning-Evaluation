@@ -19,15 +19,15 @@ Usage:
 
 import argparse
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import torch
 import yaml
 
-from ace_task.scenarios import get_scenario
+from ace_task.algorithms.reinforce import REINFORCEConfig, REINFORCETrainer
 from ace_task.algorithms.rewards import create_reward_function
-from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
+from ace_task.scenarios import get_scenario
 
 
 def build_prompt(scenario, max_chars: int, word_cap: int) -> str:
@@ -111,7 +111,7 @@ def train_scenario(
 
     print(f"\nPrompt length: {len(prompt)} characters")
     print(f"Model: {model_name}")
-    print(f"Context window: 8,192 tokens (plenty of room!)")
+    print("Context window: 8,192 tokens (plenty of room!)")
     print(f"Device: {device}")
 
     # Initialize REINFORCE trainer with CPU-optimized settings
@@ -176,7 +176,7 @@ def train_scenario(
 
             # Early stopping if consistently successful
             if eval_results['success_rate'] >= 0.8:
-                print(f"\n[OK] Success rate >=80%! Training is effective.")
+                print("\n[OK] Success rate >=80%! Training is effective.")
 
     # Save final model
     save_path = Path(save_dir) / "gemma-2b" / scenario_name / f"epoch_{epochs}"

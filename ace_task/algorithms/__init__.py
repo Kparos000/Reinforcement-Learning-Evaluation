@@ -9,8 +9,8 @@ This module provides various RL strategies for improving LLM outputs:
 
 from ace_task.algorithms.base import RLAlgorithm, RLResult
 from ace_task.algorithms.best_of_n import BestOfNSampler
+from ace_task.algorithms.reinforce import REINFORCEConfig, REINFORCETrainer
 from ace_task.algorithms.rewards import BinaryRewardFunction, create_reward_function
-from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
 
 __all__ = [
     "RLAlgorithm",

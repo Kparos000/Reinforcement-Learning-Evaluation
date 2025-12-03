@@ -1,16 +1,15 @@
 """
 Gemma-2B Setup Verification Test
 
-This verifies your system is ready for production REINFORCE training:
+Verifies environment readiness for production REINFORCE training:
 1. Gemma-2B model can be loaded (4GB download)
 2. 8k context window is available
 3. Can generate text properly
 4. REINFORCE trainer initializes correctly
 5. Phase 2 long scenarios load
-
-Run this BEFORE starting full training to catch issues early.
 """
 
+import shutil
 import sys
 
 print("=" * 70)
@@ -22,12 +21,15 @@ print("\n[1/6] Checking imports...")
 try:
     import torch
     import transformers
-    from ace_task.algorithms.reinforce import REINFORCETrainer, REINFORCEConfig
-    from ace_task.scenarios import get_scenario
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    from ace_task.algorithms.reinforce import REINFORCEConfig, REINFORCETrainer
     from ace_task.algorithms.rewards import create_reward_function
+    from ace_task.scenarios import get_scenario
+
     print(f"[OK] PyTorch {torch.__version__}")
     print(f"[OK] Transformers {transformers.__version__}")
-    print(f"[OK] REINFORCE modules imported")
+    print("[OK] REINFORCE modules imported")
 except ImportError as e:
     print(f"[ERROR] Import failed: {e}")
     print("\nPlease install dependencies:")
@@ -47,31 +49,28 @@ else:
 
 # Test 3: Check disk space
 print("\n[3/6] Checking disk space...")
-import shutil
 try:
     stat = shutil.disk_usage(".")
     free_gb = stat.free / (1024**3)
     print(f"[OK] Free disk space: {free_gb:.1f} GB")
     if free_gb < 10:
-        print(f"Warning  Warning: Low disk space. Need ~6GB for Gemma-2B download + models")
+        print("Warning: Low disk space. Need ~6GB for Gemma-2B download + models")
     else:
-        print(f"   Plenty of space for Gemma-2B (needs ~6GB)")
+        print("   Plenty of space for Gemma-2B (needs ~6GB)")
 except Exception as e:
-    print(f"Warning  Could not check disk space: {e}")
+    print(f"Warning: Could not check disk space: {e}")
 
 # Test 4: Load Gemma-2B model
 print("\n[4/6] Loading Gemma-2B model...")
 print("   (First run: downloads 4GB model, takes 5-10 min)")
 try:
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-
     model_name = "google/gemma-2b"
     print(f"   Loading {model_name}...")
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
 
-    print(f"[OK] Gemma-2B loaded successfully")
+    print("[OK] Gemma-2B loaded successfully")
     print(f"   Parameters: {model.num_parameters() / 1e9:.2f}B")
     print(f"   Context window: {model.config.max_position_embeddings} tokens")
 
@@ -83,7 +82,7 @@ try:
     output_text = tokenizer.decode(output[0], skip_special_tokens=True)
     print(f"   Input: '{test_input}'")
     print(f"   Output: '{output_text}'")
-    print(f"   [OK] Generation working!")
+    print("   [OK] Generation working!")
 
     # Clean up
     del model
@@ -104,7 +103,7 @@ try:
     print(f"   Original length: {len(scenario.original)} chars")
     print(f"   Facts to preserve: {len(scenario.facts)}")
     print(f"   Target compression: {int(len(scenario.original) * 0.6)} chars (60%)")
-    print(f"   Word cap: 120 words")
+    print("   Word cap: 120 words")
 except Exception as e:
     print(f"[ERROR] Scenario loading failed: {e}")
     sys.exit(1)
@@ -126,9 +125,9 @@ try:
         config=config,
         device="cpu",  # Use CPU for test
     )
-    print(f"[OK] REINFORCE trainer initialized")
-    print(f"   Model: Gemma-2B")
-    print(f"   Context: 8,192 tokens")
+    print("[OK] REINFORCE trainer initialized")
+    print("   Model: Gemma-2B")
+    print("   Context: 8,192 tokens")
     print(f"   Learning rate: {config.learning_rate}")
     print(f"   Temperature: {config.temperature}")
 
@@ -137,6 +136,7 @@ try:
 except Exception as e:
     print(f"[ERROR] Trainer initialization failed: {e}")
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -145,7 +145,7 @@ print("\n" + "=" * 70)
 print("[OK] ALL TESTS PASSED!")
 print("=" * 70)
 print("\nYour system is ready for production REINFORCE training with Gemma-2B!")
-print("\nNext Steps Next Steps:")
+print("\nNext Steps:")
 print("\n1. Quick test (30-45 min, validate training works):")
 print("   python experiments/train_reinforce_gemma.py --scenario medical_long --epochs 10")
 print()
@@ -157,7 +157,7 @@ print("   - Models saved to: results/reinforce/gemma-2b/")
 print("   - Ready for UI integration")
 print("   - Can proceed to Phase 3 (PPO)")
 print()
-print("Tips Tips:")
+print("Tips:")
 print("   - Training on CPU: 2-4 hours total (can run overnight)")
 print("   - If you have GPU: add --device cuda for 3-5x speedup")
 print("   - Training progress shown in real-time")
