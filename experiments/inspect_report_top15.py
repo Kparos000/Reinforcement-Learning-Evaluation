@@ -14,7 +14,7 @@ from math import floor
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from ace_task.algorithms.rewards import dense_reward_from_grade
+from ace_task.algorithms.rewards import compute_dense_reward
 from ace_task.evaluate import build_user_message
 from ace_task.grader import GradeResult, grade_detailed
 from ace_task.scenarios import get_scenario
@@ -68,7 +68,7 @@ def run_inspection() -> None:
         concision_limit=concision_limit,
         word_cap=word_cap,
     )
-    reward = dense_reward_from_grade(grade)
+    reward = compute_dense_reward(scenario, text)
 
     missing = ""
     if not grade.passed and grade.reason.startswith("Missing facts:"):
