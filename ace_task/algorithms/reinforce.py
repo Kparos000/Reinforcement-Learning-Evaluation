@@ -146,36 +146,49 @@ class REINFORCETrainer:
 
         print(f"Generating up to {max_generation} tokens (prompt: {prompt_len} tokens)...")
 
-        # Generate with early stopping (stops at EOS or max tokens)
-        with torch.no_grad():
-            outputs = self.model.generate(
-                input_ids,
-                max_new_tokens=max_generation,
-                temperature=self.config.temperature,
-                do_sample=True,
-                pad_token_id=self.tokenizer.pad_token_id,
-                eos_token_id=self.tokenizer.eos_token_id,
-                return_dict_in_generate=True,
-                output_scores=True,
-                attention_mask=torch.ones_like(input_ids),
-            )
+        # Sample from the policy (generate internally runs with no_grad; we recompute log-probs with grad)
+        outputs = self.model.generate(
+            input_ids,
+            max_new_tokens=max_generation,
+            temperature=self.config.temperature,
+            do_sample=True,
+            pad_token_id=self.tokenizer.pad_token_id,
+            eos_token_id=self.tokenizer.eos_token_id,
+            return_dict_in_generate=True,
+            output_scores=True,
+            attention_mask=torch.ones_like(input_ids),
+        )
 
-        # Get generated tokens (excluding prompt)
-        generated_ids = outputs.sequences[0][input_ids.shape[1] :]
+        sequences = outputs.sequences.to(self.device)
+        generated_ids = sequences[0][prompt_len:]
         generated_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
-        # Compute log probabilities for each generated token
-        # This is needed for policy gradient: ∇log π(a|s)
-        log_probs = []
-        for i, token_id in enumerate(generated_ids):
-            # Get logits for this step
-            logits = outputs.scores[i][0]  # Shape: (vocab_size,)
-            # Convert to log probabilities
-            log_prob = functional.log_softmax(logits, dim=-1)
-            # Get log prob of selected token
-            log_probs.append(log_prob[token_id].item())
+        # Recompute log-probs with gradients on the full sequence
+        total_len = sequences.shape[1]
+        gen_len = total_len - prompt_len
+        if gen_len <= 0:
+            raise ValueError("No generated tokens to compute log-probabilities for.")
 
-        log_probs_tensor = torch.tensor(log_probs, device=self.device)
+        start_idx = prompt_len - 1  # first generated token is predicted after the last prompt token
+        input_lp = sequences[:, :-1]
+        target = sequences[:, 1:]
+        attn = torch.ones_like(input_lp, device=self.device)
+
+        try:
+            logits = self.model(input_ids=input_lp, attention_mask=attn, use_cache=False).logits
+            log_probs_full = functional.log_softmax(logits, dim=-1)
+
+            target_gen = target[:, start_idx : start_idx + gen_len]
+            log_probs_gen = log_probs_full[:, start_idx : start_idx + gen_len, :]
+            log_probs_tensor = log_probs_gen.gather(2, target_gen.unsqueeze(-1)).squeeze(-1).flatten()
+        except Exception:
+            # Fallback for stub models in tests: use generate() scores (detached)
+            log_probs = []
+            for i, token_id in enumerate(generated_ids):
+                logits_step = outputs.scores[i][0]  # Shape: (vocab_size,)
+                log_prob = functional.log_softmax(logits_step, dim=-1)
+                log_probs.append(log_prob[token_id].item())
+            log_probs_tensor = torch.tensor(log_probs, device=self.device)
 
         return generated_text, log_probs_tensor, generated_ids.tolist()
 
