@@ -26,7 +26,12 @@ from ace_task.scenarios import get_scenario
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train a model on ACE with REINFORCE.")
-    parser.add_argument("--model", type=str, default="gpt2", help="HF model name (e.g., gpt2, gpt2-medium)")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="Qwen/Qwen2-7B-Instruct",
+        help="HF model name (default: Qwen/Qwen2-7B-Instruct)",
+    )
     parser.add_argument(
         "--steps",
         type=int,

@@ -66,7 +66,7 @@ The script prints each run’s reason (pass/fail) and the final pass rate.
 Run a tiny REINFORCE loop against the deterministic grader using any local HF model:
 
 ```bash
-python -m ace_task.train_reinforce --model gpt2 --steps 5 --scenario report_long --device cpu
+python -m ace_task.train_reinforce --model Qwen/Qwen2-7B-Instruct --steps 5 --scenario report_long --device cuda
 ```
 
 ---
