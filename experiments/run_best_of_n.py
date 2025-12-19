@@ -72,8 +72,11 @@ def run_single_experiment(
     # Load scenario
     scenario = get_scenario(scenario_name)
 
-    # Create reward function
-    reward_fn = create_reward_function(scenario, reward_scheme=config["rl"]["reward_scheme"])
+    # Create reward function (respect config reward_scheme)
+    reward_scheme = config["rl"].get("reward_scheme", "binary")
+    if verbose:
+        print(f"Using reward_scheme={reward_scheme} for scenario {scenario_name}")
+    reward_fn = create_reward_function(scenario, reward_scheme=reward_scheme)
 
     # Convert facts to proper JSON format (with double quotes)
     facts_json = json.dumps(scenario.facts)
