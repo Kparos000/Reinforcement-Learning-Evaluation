@@ -17,7 +17,6 @@ import json
 import os
 import random
 import statistics
-from math import floor
 from typing import Dict, Iterable, List
 
 from anthropic import Anthropic
@@ -25,11 +24,11 @@ from dotenv import load_dotenv
 
 from .algorithms.rewards import dense_reward_from_grade
 from .grader import grade_detailed
+from .prompting import PROMPT_PATH as PROMPT_FILE, build_user_message, compute_limits
 from .scenarios import get_scenario
 
 load_dotenv()
-
-PROMPT_PATH = __package__.replace(".", "/") + "/prompt.txt"
+PROMPT_PATH = str(PROMPT_FILE)
 
 
 def require_api_key() -> str:
@@ -38,30 +37,6 @@ def require_api_key() -> str:
     if not api_key:
         raise EnvironmentError("Missing ANTHROPIC_API_KEY in environment or .env file")
     return api_key
-
-
-def build_user_message(max_chars: int, max_words: int, scenario) -> str:
-    """Combine the prompt spec with fixtures and numeric caps."""
-    with open(PROMPT_PATH, "r", encoding="utf-8") as f:
-        task_text = f.read()
-
-    facts_lines = "\n".join(f"- {f}" for f in scenario.facts)
-    banned_lines = "\n".join(f"- {b}" for b in sorted(scenario.banned))
-
-    hard_limit = (
-        f"\nHARD LIMITS FOR THIS RUN:\n"
-        f"- MAX_CHARS for rewrite: {max_chars}\n"
-        f"- MAX_WORDS for rewrite: {max_words}\n"
-        f"If your rewrite exceeds {max_chars} characters OR {max_words} words, the submission FAILS.\n"
-    )
-
-    return (
-        f"{task_text}\n"
-        f"{hard_limit}\n"
-        f"ORIGINAL:\n{scenario.original}\n\n"
-        f"FACTS:\n{facts_lines}\n\n"
-        f"BANNED:\n{banned_lines}\n"
-    )
 
 
 def run_once(
@@ -126,9 +101,9 @@ def main() -> None:
     concision_limit = args.concision
     if concision_limit is None:
         concision_limit = getattr(scenario, "concision_limit", None) or 0.60
-    max_chars = floor(len(scenario.original) * concision_limit)
-
-    base_word_cap = args.word_cap or getattr(scenario, "word_cap", None) or 16
+    max_chars, base_word_cap = compute_limits(
+        scenario, concision_limit=concision_limit, word_cap=args.word_cap
+    )
 
     client = Anthropic()
     random.seed()

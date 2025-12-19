@@ -64,6 +64,7 @@ def compute_dense_reward(
 def create_reward_function(
     scenario,
     reward_scheme: str = "binary",
+    grader_config: dict | None = None,
 ) -> Callable[[str], float]:
     """
     Create a reward function for a specific scenario.
@@ -71,11 +72,14 @@ def create_reward_function(
     Args:
         scenario: Scenario object with original, facts, banned attributes
         reward_scheme: "binary" or "dense"
+        grader_config: Optional overrides for grading (concision_limit, word_cap, alias_map)
     """
+    grader_config = grader_config or {}
+
     if reward_scheme == "binary":
-        return BinaryRewardFunction(scenario)
+        return BinaryRewardFunction(scenario, grader_config=grader_config)
     if reward_scheme == "dense":
-        return DenseRewardFunction(scenario)
+        return DenseRewardFunction(scenario, grader_config=grader_config)
     raise ValueError(f"Unknown reward scheme: {reward_scheme}")
 
 

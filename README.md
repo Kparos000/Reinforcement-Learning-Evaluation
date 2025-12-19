@@ -61,6 +61,14 @@ python -m ace_task.evaluate --runs 10 --model claude-3-5-haiku-latest
 
 The script prints each run’s reason (pass/fail) and the final pass rate.
 
+### Train (REINFORCE)
+
+Run a tiny REINFORCE loop against the deterministic grader using any local HF model:
+
+```bash
+python -m ace_task.train_reinforce --model gpt2 --steps 5 --scenario report_long --device cpu
+```
+
 ---
 
 ## Tuning the 10–40% pass-rate (as required)

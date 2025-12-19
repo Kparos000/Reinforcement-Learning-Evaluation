@@ -97,17 +97,52 @@ class REINFORCETrainer:
         Returns:
             Tuple of (generated_text, log_probs, token_ids)
         """
-        # Encode prompt
-        input_ids = self.tokenizer.encode(prompt, return_tensors="pt").to(self.device)
+        # Encode prompt with truncation to fit model context window
+        model_ctx = (
+            getattr(self.model.config, "max_position_embeddings", None)
+            or getattr(self.model.config, "n_positions", None)
+            or getattr(self.tokenizer, "model_max_length", None)
+            or 1024
+        )
 
+        # Reserve headroom for generation to avoid position overflow
+        generation_budget = min(400, self.config.max_length)
+        prompt_budget = max(1, model_ctx - generation_budget)
+
+        try:
+            full_ids = self.tokenizer.encode(
+                prompt, return_tensors="pt", truncation=True, max_length=prompt_budget
+            )
+        except TypeError:
+            # Fallback for minimal/tokenizer stubs without truncation args (used in tests)
+            full_ids = self.tokenizer.encode(prompt, return_tensors="pt")
+            if full_ids.shape[1] > prompt_budget:
+                full_ids = full_ids[:, -prompt_budget:]
+        input_ids = full_ids.to(self.device)
         prompt_len = input_ids.shape[1]
+
+        # Warn if truncation occurred
+        raw_ids = self.tokenizer.encode(prompt)
+        raw_len = raw_ids.shape[-1] if hasattr(raw_ids, "shape") else len(raw_ids)
+        if raw_len > prompt_len:
+            print(f"Prompt truncated from {raw_len} to {prompt_len} tokens to fit model context ({model_ctx}).")
+
+        # Ensure we leave room for generation
+        available_gen = model_ctx - prompt_len
+        if available_gen <= 0:
+            raise ValueError(
+                f"Prompt is too long for the model context window ({model_ctx} tokens). "
+                "Use a shorter scenario/model or reduce the prompt size."
+            )
 
         # For ACE task, we need ~200-400 tokens for JSON output
         # Don't generate more than necessary (faster on CPU!)
-        max_generation = 400  # Enough for JSON with facts
-
-        if self.config.max_length < max_generation:
-            max_generation = self.config.max_length
+        max_generation = min(400, self.config.max_length, available_gen)
+        if max_generation <= 0:
+            raise ValueError(
+                f"Not enough context space to generate tokens (prompt={prompt_len}, ctx={model_ctx}). "
+                "Reduce prompt length or reserve fewer generation tokens."
+            )
 
         print(f"Generating up to {max_generation} tokens (prompt: {prompt_len} tokens)...")
 
@@ -122,8 +157,7 @@ class REINFORCETrainer:
                 eos_token_id=self.tokenizer.eos_token_id,
                 return_dict_in_generate=True,
                 output_scores=True,
-                # Early stopping - stop when EOS is generated
-                early_stopping=True,
+                attention_mask=torch.ones_like(input_ids),
             )
 
         # Get generated tokens (excluding prompt)
