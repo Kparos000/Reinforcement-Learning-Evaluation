@@ -1,5 +1,5 @@
 """
-Minimal REINFORCE training loop wired to the ACE task.
+Experimental REINFORCE training loop wired to the ACE task.
 
 This CLI:
 - Loads a scenario (ORIGINAL/FACTS/BANNED) and builds the prompt from prompt.txt

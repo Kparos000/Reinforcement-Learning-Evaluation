@@ -1,5 +1,6 @@
 """
 REINFORCE Algorithm Implementation (Policy Gradient)
+Experimental HF training helper for local models; not required for core Anthropic evaluation/Best-of-N.
 
 This implements the classic REINFORCE algorithm (Williams, 1992) for training
 language models to generate compressed text while preserving facts.

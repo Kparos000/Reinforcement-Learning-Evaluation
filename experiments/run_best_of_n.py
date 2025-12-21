@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Best-of-N Ablation Study Experiment Runner.
+Core sampling baseline script (no training) alongside ace_task.evaluate.
 
 This script runs a comprehensive ablation study to understand how N (number of samples)
 affects performance. Results are saved to JSON for later analysis and visualization.

@@ -1,4 +1,7 @@
 """
+Experimental REINFORCE training with Gemma-2B (HF local model).
+Not required for core Anthropic evaluation or Best-of-N.
+
 REINFORCE Training with Gemma-2B for Phase 2 (Production)
 
 This is the PRODUCTION implementation using Gemma-2B:

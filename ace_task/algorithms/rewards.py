@@ -1,5 +1,7 @@
 """
 Reward functions for RL algorithms.
+Core bridge from deterministic grading to scalar rewards; used by evaluation,
+Best-of-N sampling, and experimental training loops.
 
 This module converts grader outputs into scalar rewards that RL algorithms
 can optimize. Provides both binary (pass/fail) and dense (partial credit) rewards.

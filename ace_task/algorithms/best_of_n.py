@@ -1,5 +1,6 @@
 """
 Best-of-N Sampling Algorithm.
+Core sampling baseline used by ace_task.evaluate workflows and Best-of-N experiments.
 
 This module implements the simplest yet effective RL strategy: generate N outputs
 and select the one with the highest reward. No training required!

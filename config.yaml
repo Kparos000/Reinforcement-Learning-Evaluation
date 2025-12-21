@@ -1,7 +1,7 @@
 # Configuration for RL-ACE Evaluation Framework
 # This file controls all hyperparameters, model settings, and evaluation parameters
 
-# Model Configuration
+# Model Configuration (core eval and Best-of-N)
 model:
   provider: "anthropic"  # anthropic, openai, or huggingface
   name: "claude-3-5-haiku-latest"
@@ -9,14 +9,14 @@ model:
   temperature: 0.45
   top_p: 0.9
 
-# Grader Configuration
+# Grader Configuration (core)
 grader:
   concision_limit: 0.60  # Max 60% of original character count
   word_cap: 16          # Max words in rewrite
   min_delta_words: 6    # Minimum words in delta_update
   strict_mode: true     # Fail on any validation error
 
-# Evaluation Configuration
+# Evaluation Configuration (core, ace_task.evaluate)
 evaluation:
   num_runs: 10
   random_seed: 42
@@ -24,25 +24,27 @@ evaluation:
   parallel_workers: 4
 
 # RL Algorithm Configuration
+# Core sampling: best_of_n
+# Experimental training: reinforce/ppo (HF local models)
 rl:
   algorithm: "best_of_n"  # best_of_n, reinforce, ppo
   reward_scheme: "dense"  # binary, partial (Phase 2), dense (Phase 3)
 
-  # Best-of-N specific
+  # Best-of-N specific (core baseline)
   best_of_n:
     n_samples: 5
     temperature: 1.0  # High temp for diversity
     early_stop: true  # Stop if perfect reward achieved
     ablation_n_values: [1, 3, 5, 10, 20]  # For ablation study
 
-  # REINFORCE specific (Phase 2)
+  # REINFORCE specific (experimental HF training)
   reinforce:
     learning_rate: 0.001
     gamma: 1.0  # Discount factor (1.0 for single-step)
     baseline: "moving_average"  # none, moving_average, learned
     n_samples: 5  # Samples per training iteration
 
-  # PPO specific (Phase 3)
+  # PPO specific (experimental, not implemented yet)
   ppo:
     learning_rate: 0.0003
     gamma: 1.0

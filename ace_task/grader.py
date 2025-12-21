@@ -1,5 +1,6 @@
 """
 Deterministic grader for the ACE RL evaluation task.
+Core ACE-style component used by evaluation, Best-of-N, and reward functions.
 
 Checks:
 - JSON schema & types

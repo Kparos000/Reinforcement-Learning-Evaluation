@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Debug new scenarios to see why they fail."""
+"""Legacy helper for manual debugging new scenarios; not used in tests or pipelines."""
 
 import json
 import os

@@ -1,6 +1,7 @@
 """
 Configuration management for ACE RL Evaluation Framework.
-
+Core: evaluation settings (Anthropic/best-of-n) + shared grader/scenario controls.
+Experimental: RL training knobs (REINFORCE/PPO) for local HF models.
 Uses Pydantic for validation and YAML for human-readable config files.
 Implements environment variable overrides and validation.
 """

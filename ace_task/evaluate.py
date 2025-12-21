@@ -1,5 +1,6 @@
 """
 Evaluator:
+Core Anthropic evaluation entrypoint (prompt + grade loop) for ACE-style tasks.
 - Loads ANTHROPIC_API_KEY from .env (python-dotenv).
 - Builds a user message from prompt.txt + fixtures (ORIGINAL/FACTS/BANNED) and injects a per-run HARD LIMIT (MAX_CHARS).
 - Calls Anthropic once per run (no tools) with modest randomness so outputs vary across runs.
