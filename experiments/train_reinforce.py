@@ -1,5 +1,6 @@
 """
-REINFORCE Training Script for Phase 2 Long Scenarios
+Experimental REINFORCE Training Script for Phase 2 Long Scenarios
+Not required for core Anthropic evaluation/Best-of-N. Uses local HF models.
 
 This script trains a language model using REINFORCE to compress
 long documents (2000+ characters) while preserving all facts.
@@ -51,6 +52,7 @@ def train_scenario(
     save_dir: str,
     device: str,
     config: dict,
+    reward_scheme: str,
 ):
     """Train REINFORCE on a single scenario."""
     print("\n" + "=" * 80)
@@ -70,8 +72,8 @@ def train_scenario(
     print(f"Target: {max_chars} chars, {word_cap} words")
     print(f"Facts to preserve: {len(scenario.facts)}")
 
-    # Create reward function
-    reward_fn = create_reward_function(scenario, reward_scheme="binary")
+    # Create reward function (respects configured reward scheme)
+    reward_fn = create_reward_function(scenario, reward_scheme=reward_scheme)
 
     # Build prompt
     prompt = build_prompt(scenario, max_chars, word_cap)
@@ -214,6 +216,13 @@ def main():
         default="results/reinforce",
         help="Directory to save models"
     )
+    parser.add_argument(
+        "--reward-scheme",
+        type=str,
+        choices=["binary", "dense"],
+        default=None,
+        help="Reward scheme to use (default: from config.yaml rl.reward_scheme).",
+    )
 
     args = parser.parse_args()
 
@@ -230,6 +239,8 @@ def main():
         # Default: all Phase 2 long scenarios
         scenarios = ["medical_long", "business_long", "legal_long"]
 
+    reward_scheme = args.reward_scheme or config["rl"].get("reward_scheme", "binary")
+
     print("\n" + "=" * 80)
     print("REINFORCE TRAINING - PHASE 2")
     print("=" * 80)
@@ -238,6 +249,7 @@ def main():
     print(f"Epochs per scenario: {args.epochs}")
     print(f"Device: {args.device}")
     print(f"Save directory: {args.save_dir}")
+    print(f"Reward scheme: {reward_scheme}")
     print("=" * 80)
 
     # Train each scenario
@@ -251,6 +263,7 @@ def main():
             save_dir=args.save_dir,
             device=args.device,
             config=config,
+            reward_scheme=reward_scheme,
         )
         all_results[scenario_name] = history
 
