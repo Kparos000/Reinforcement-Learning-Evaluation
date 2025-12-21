@@ -8,6 +8,7 @@ long documents (2000+ characters) while preserving all facts.
 Usage:
     python experiments/train_reinforce.py --scenario medical_long --epochs 50
     python experiments/train_reinforce.py --scenarios medical_long business_long legal_long --epochs 100
+    python experiments/train_reinforce.py --scenario economics --epochs 3 --device cpu --reward-scheme dense --max-length 96
 """
 
 import argparse
@@ -53,6 +54,7 @@ def train_scenario(
     device: str,
     config: dict,
     reward_scheme: str,
+    max_length: int,
 ):
     """Train REINFORCE on a single scenario."""
     print("\n" + "=" * 80)
@@ -87,7 +89,7 @@ def train_scenario(
         learning_rate=float(config["rl"]["reinforce"]["learning_rate"]),
         gamma=float(config["rl"]["reinforce"]["gamma"]),
         baseline_type=config["rl"]["reinforce"]["baseline"],
-        max_length=512,
+        max_length=max_length,
         temperature=1.0,
     )
 
@@ -223,6 +225,12 @@ def main():
         default=None,
         help="Reward scheme to use (default: from config.yaml rl.reward_scheme).",
     )
+    parser.add_argument(
+        "--max-length",
+        type=int,
+        default=96,
+        help="Maximum generation length used by REINFORCEConfig (caps max_new_tokens in generate()).",
+    )
 
     args = parser.parse_args()
 
@@ -250,6 +258,7 @@ def main():
     print(f"Device: {args.device}")
     print(f"Save directory: {args.save_dir}")
     print(f"Reward scheme: {reward_scheme}")
+    print(f"Max generation length (max_length): {args.max_length}")
     print("=" * 80)
 
     # Train each scenario
@@ -264,6 +273,7 @@ def main():
             device=args.device,
             config=config,
             reward_scheme=reward_scheme,
+            max_length=args.max_length,
         )
         all_results[scenario_name] = history
 
